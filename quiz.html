@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Quiz PHP interaktif untuk pemula." />
+    <title>Quiz PHP | PHP Beginner Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body data-page="quiz">
+    <div id="appNav"></div>
+    <main>
+      <section class="page-hero">
+        <div class="container">
+          <span class="eyebrow"><i class="bi bi-patch-question"></i> Quiz Interaktif</span>
+          <h1>Cek pemahaman dasar PHP-mu</h1>
+          <p>Jawab satu per satu. Setiap jawaban punya pembahasan sederhana dan skor tersimpan otomatis.</p>
+        </div>
+      </section>
+      <section class="section-block alt-section" id="quiz">
+        <div class="container"><div class="challenge-shell" id="quizContainer"></div></div>
+      </section>
+    </main>
+    <div id="appFooter"></div>
+    <div id="appToast"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/progress.js"></script>
+    <script src="assets/js/layout.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

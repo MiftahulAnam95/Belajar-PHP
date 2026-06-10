@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -10 590 142" role="img" aria-labelledby="title">
+  <title id="title">Belajar PHP</title>
+  <defs>
+    <linearGradient id="elephantBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dce5ff"/>
+      <stop offset="0.5" stop-color="#a9b9f4"/>
+      <stop offset="1" stop-color="#7f8ed2"/>
+    </linearGradient>
+    <linearGradient id="elephantEar" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#bdcaff"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c4b5fd"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8f7ff"/>
+      <stop offset="1" stop-color="#ddd6fe"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10 10)">
+    <path d="M35 93V58c0-28 20-45 54-45h32c31 0 53 22 57 54l3 26h-40l-4-20h-17l-5 20H75l-5-20H56l-5 20H35Z" fill="url(#elephantBody)" stroke="#302c4f" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M36 92H22c-10 0-16-6-16-16V54c0-21 16-35 46-40l31-2c13-13 32-14 48-3 16 11 25 35 21 67-2 15-12 23-32 28" fill="url(#elephantEar)" stroke="#302c4f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M21 44c15-10 34-16 57-17" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" opacity="0.58"/>
+    <path d="M78 69c10 11 25 11 34-1" fill="none" stroke="#302c4f" stroke-width="6" stroke-linecap="round"/>
+    <path d="M50 69c-5 9-7 20-6 33 1 8-4 13-13 13H19c-9 0-14-5-15-14L2 74c-2-18 7-30 26-37" fill="#fbfdff" stroke="#302c4f" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M33 59c-8-2-16 1-23 8" fill="none" stroke="#302c4f" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="36" cy="76" r="12" fill="#ffffff" stroke="#302c4f" stroke-width="5"/>
+    <circle cx="40" cy="75" r="6" fill="#302c4f"/>
+    <circle cx="44" cy="70" r="2.5" fill="#ffffff"/>
+    <text x="92" y="66" fill="#302c4f" stroke="#ffffff" stroke-width="5" paint-order="stroke" font-family="Inter, Arial, sans-serif" font-size="31" font-weight="900" font-style="italic" letter-spacing="-1">php</text>
+  </g>
+
+  <text x="224" y="78" fill="url(#ink)" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="800" letter-spacing="0">Belajar</text>
+  <text x="439" y="78" fill="url(#accent)" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="800" letter-spacing="0">PHP</text>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="16" fill="#f3e8ff"/>
+  <path d="M16 50V31c0-15 11-24 29-24h7c4 0 7 3 8 7v36H47l-2-10h-7l-3 10H16Z" fill="#8fa1d8" stroke="#34304f" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M18 49h-7c-5 0-8-3-8-8V29c0-11 8-18 24-20l12-1c9 4 13 12 11 26-1 8-7 12-18 15" fill="#fbfdff" stroke="#34304f" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="19" cy="32" r="7" fill="#fff" stroke="#34304f" stroke-width="3"/>
+  <circle cx="22" cy="31" r="3" fill="#34304f"/>
+  <text x="28" y="31" fill="#34304f" stroke="#fff" stroke-width="2" paint-order="stroke" font-family="Arial, sans-serif" font-size="16" font-weight="900" font-style="italic">php</text>
+</svg>
