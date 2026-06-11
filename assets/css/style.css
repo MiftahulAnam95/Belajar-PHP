@@ -1351,6 +1351,315 @@ body.dark-mode .brand-logo-dark {
   min-height: 255px;
 }
 
+.php-code-editor-wrap,
+.html-editor-wrap,
+.css-editor-wrap {
+  background: #111827;
+  position: relative;
+}
+
+.editor-shell.color-picker-open,
+.editor-shell.suggestion-open {
+  overflow: visible;
+  position: relative;
+  z-index: 6;
+}
+
+.editor-suggestion-popover {
+  background: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  border-radius: 10px;
+  box-shadow: 0 22px 48px rgba(2, 8, 23, 0.44);
+  color: #dbeafe;
+  font-family: "Inter", Arial, sans-serif;
+  max-height: 236px;
+  overflow: auto;
+  padding: 0.35rem;
+  position: absolute;
+  width: min(286px, calc(100vw - 2rem));
+  z-index: 18;
+}
+
+.editor-suggestion-popover[hidden] {
+  display: none !important;
+}
+
+.editor-suggestion-option {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: #dbeafe;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 38px minmax(0, 1fr);
+  padding: 0.45rem 0.52rem;
+  text-align: left;
+  width: 100%;
+}
+
+.editor-suggestion-option:hover,
+.editor-suggestion-option.active,
+.editor-suggestion-option:focus {
+  background: rgba(14, 165, 183, 0.24);
+  color: #fff;
+  outline: 0;
+}
+
+.editor-suggestion-kind {
+  align-items: center;
+  background: rgba(14, 165, 183, 0.18);
+  border: 1px solid rgba(103, 232, 249, 0.24);
+  border-radius: 6px;
+  color: #67e8f9;
+  display: inline-flex;
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 0.66rem;
+  font-weight: 800;
+  height: 28px;
+  justify-content: center;
+}
+
+.editor-suggestion-main {
+  display: grid;
+  gap: 0.04rem;
+  min-width: 0;
+}
+
+.editor-suggestion-name {
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.editor-suggestion-detail {
+  color: #94a3b8;
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-color-chip,
+.editor-color-popover {
+  color: #e2e8f0;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+.editor-color-chip[hidden],
+.editor-color-popover[hidden] {
+  display: none !important;
+}
+
+.editor-color-chip {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(226, 232, 240, 0.82);
+  border-radius: 6px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+  display: inline-flex;
+  height: 24px;
+  justify-content: center;
+  padding: 3px;
+  position: absolute;
+  width: 24px;
+  z-index: 5;
+}
+
+.editor-color-chip span {
+  border-radius: 4px;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.editor-color-popover {
+  background: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(2, 8, 23, 0.45);
+  padding: 0.78rem;
+  position: absolute;
+  width: min(342px, calc(100vw - 2rem));
+  z-index: 20;
+}
+
+.editor-color-top {
+  align-items: stretch;
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  min-height: 42px;
+}
+
+.editor-color-preview {
+  border: 1px solid rgba(226, 232, 240, 0.32);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.28);
+}
+
+.editor-color-hex {
+  background: #111827;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 8px;
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.32rem 0.5rem;
+}
+
+.editor-color-hex span {
+  color: #94a3b8;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.editor-color-hex input {
+  background: transparent;
+  border: 0;
+  color: #f8fafc;
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 0.86rem;
+  line-height: 1.25;
+  min-width: 0;
+  outline: 0;
+  padding: 0;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.editor-color-close {
+  align-items: center;
+  background: #111827;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 8px;
+  color: #cbd5e1;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 42px;
+  width: 42px;
+}
+
+.editor-color-close:hover,
+.editor-color-close:focus {
+  background: #1e293b;
+  color: #fff;
+}
+
+.editor-color-body {
+  align-items: stretch;
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: minmax(0, 1fr) 28px;
+  margin-top: 0.68rem;
+}
+
+.editor-color-map {
+  background:
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to right, #fff, transparent),
+    hsl(var(--picker-hue, 0) 100% 50%);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 10px;
+  cursor: crosshair;
+  height: 162px;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+}
+
+.editor-color-cursor {
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8), 0 2px 7px rgba(0, 0, 0, 0.55);
+  height: 14px;
+  left: 100%;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translate(-50%, -50%);
+  width: 14px;
+}
+
+.editor-color-hue {
+  appearance: none;
+  background: linear-gradient(0deg, #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000);
+  border-radius: 999px;
+  cursor: pointer;
+  display: block;
+  direction: rtl;
+  height: 162px;
+  margin: 0;
+  outline: 0;
+  writing-mode: vertical-lr;
+  width: 28px;
+}
+
+.editor-color-hue::-webkit-slider-thumb {
+  appearance: none;
+  background: #fff;
+  border: 2px solid #0f172a;
+  border-radius: 50%;
+  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.42);
+  height: 20px;
+  width: 20px;
+}
+
+.editor-color-hue::-moz-range-thumb {
+  background: #fff;
+  border: 2px solid #0f172a;
+  border-radius: 50%;
+  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.42);
+  height: 16px;
+  width: 16px;
+}
+
+.editor-color-presets {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-top: 0.68rem;
+}
+
+.editor-color-preset {
+  aspect-ratio: 1;
+  background: var(--preset-color);
+  border: 1px solid rgba(226, 232, 240, 0.54);
+  border-radius: 7px;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.16);
+}
+
+.editor-color-preset:hover,
+.editor-color-preset:focus {
+  box-shadow: 0 0 0 3px rgba(14, 165, 183, 0.32);
+}
+
+.editor-color-hex input:focus-visible,
+.editor-color-close:focus-visible,
+.editor-color-map:focus-visible,
+.editor-color-hue:focus-visible,
+.editor-color-preset:focus-visible,
+.editor-color-chip:focus-visible {
+  outline: 3px solid rgba(14, 165, 183, 0.42);
+  outline-offset: 3px;
+}
+
+.textarea-caret-mirror {
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  visibility: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+  z-index: -1;
+}
+
 .css-inline-editor {
   cursor: text;
   overflow: auto;
@@ -2872,6 +3181,15 @@ body.dark-mode .project-example-window {
 
   .code-input {
     min-height: 260px;
+  }
+
+  .editor-color-popover {
+    width: min(302px, calc(100vw - 1.4rem));
+  }
+
+  .editor-color-map,
+  .editor-color-hue {
+    height: 148px;
   }
 
   #previewFrame {
