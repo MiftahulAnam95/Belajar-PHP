@@ -7,6 +7,9 @@ window.PhpLabApp = (() => {
   const debugAttempts = {};
   const LESSON_RECALL_STORAGE_KEY = "php-beginner-lab-lesson-recall-v1";
   let toastInstance;
+  let editorColorPicker;
+  let editorTagSuggest;
+  let editorUndoHistory;
   const getElement = (id) => document.getElementById(id);
   const rootPath = document.body.dataset.root || "";
   const lessonHref = (id) => `${rootPath}materi/${id}.html`;
@@ -930,6 +933,930 @@ window.PhpLabApp = (() => {
     button.setAttribute("aria-label", dark ? "Aktifkan mode terang" : "Aktifkan mode gelap");
   };
 
+  const runPhpEditorPreview = () => {
+    window.PhpLabEditor?.runEditor?.();
+  };
+
+  const initEditorUndoHistory = (inputs, onChange) => {
+    const maxHistory = 140;
+    const histories = new Map();
+
+    const snapshot = (input) => ({
+      value: input.value,
+      selectionStart: input.selectionStart,
+      selectionEnd: input.selectionEnd,
+      scrollLeft: input.scrollLeft,
+      scrollTop: input.scrollTop
+    });
+
+    const sameSnapshot = (first, second) =>
+      first &&
+      second &&
+      first.value === second.value &&
+      first.selectionStart === second.selectionStart &&
+      first.selectionEnd === second.selectionEnd &&
+      first.scrollLeft === second.scrollLeft &&
+      first.scrollTop === second.scrollTop;
+
+    const ensureHistory = (input) => {
+      if (!histories.has(input)) {
+        histories.set(input, { index: 0, restoring: false, stack: [snapshot(input)] });
+      }
+      return histories.get(input);
+    };
+
+    const record = (input) => {
+      const history = ensureHistory(input);
+      if (history.restoring) return;
+      const next = snapshot(input);
+      if (sameSnapshot(history.stack[history.index], next)) return;
+      history.stack = history.stack.slice(0, history.index + 1);
+      history.stack.push(next);
+      if (history.stack.length > maxHistory) history.stack.shift();
+      history.index = history.stack.length - 1;
+    };
+
+    const restore = (input, next) => {
+      const history = ensureHistory(input);
+      history.restoring = true;
+      input.value = next.value;
+      input.setSelectionRange(next.selectionStart, next.selectionEnd);
+      input.scrollLeft = next.scrollLeft;
+      input.scrollTop = next.scrollTop;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      history.restoring = false;
+      onChange();
+    };
+
+    const undo = (input) => {
+      const history = ensureHistory(input);
+      if (history.index <= 0) return false;
+      history.index -= 1;
+      restore(input, history.stack[history.index]);
+      return true;
+    };
+
+    const redo = (input) => {
+      const history = ensureHistory(input);
+      if (history.index >= history.stack.length - 1) return false;
+      history.index += 1;
+      restore(input, history.stack[history.index]);
+      return true;
+    };
+
+    const reset = () => {
+      inputs.forEach((input) => {
+        histories.set(input, { index: 0, restoring: false, stack: [snapshot(input)] });
+      });
+    };
+
+    inputs.forEach((input) => {
+      histories.set(input, { index: 0, restoring: false, stack: [snapshot(input)] });
+      input.addEventListener("input", () => record(input));
+      input.addEventListener(
+        "keydown",
+        (event) => {
+          const key = event.key.toLowerCase();
+          const modKey = event.ctrlKey || event.metaKey;
+          const isUndo = modKey && !event.altKey && key === "z" && !event.shiftKey;
+          const isRedo = modKey && !event.altKey && (key === "y" || (key === "z" && event.shiftKey));
+          if (!isUndo && !isRedo) return;
+
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          if (isUndo) undo(input);
+          else redo(input);
+        },
+        true
+      );
+    });
+
+    reset();
+
+    return {
+      record,
+      redo,
+      reset,
+      undo
+    };
+  };
+
+  const initEditorTabBehavior = (inputs, onChange) => {
+    const indent = "  ";
+
+    const getLineRange = (input) => {
+      const value = input.value;
+      const selectionStart = input.selectionStart;
+      const selectionEnd = input.selectionEnd;
+      const effectiveEnd = selectionEnd > selectionStart && value[selectionEnd - 1] === "\n" ? selectionEnd - 1 : selectionEnd;
+      const start = value.lastIndexOf("\n", selectionStart - 1) + 1;
+      const nextBreak = value.indexOf("\n", effectiveEnd);
+      const end = nextBreak === -1 ? value.length : nextBreak;
+      return { end, start };
+    };
+
+    const lineStartsInRange = (value, start, end) => {
+      const starts = [start];
+      for (let index = start; index < end; index += 1) {
+        if (value[index] === "\n") starts.push(index + 1);
+      }
+      return starts;
+    };
+
+    const indentSelection = (input) => {
+      const value = input.value;
+      const selectionStart = input.selectionStart;
+      const selectionEnd = input.selectionEnd;
+
+      if (selectionStart === selectionEnd) {
+        input.setRangeText(indent, selectionStart, selectionEnd, "end");
+        return;
+      }
+
+      const range = getLineRange(input);
+      const block = value.slice(range.start, range.end);
+      const lines = block.split("\n");
+      const replacement = lines.map((line) => `${indent}${line}`).join("\n");
+      const lineStarts = lineStartsInRange(value, range.start, range.end);
+      const shiftPosition = (position) => lineStarts.reduce((next, lineStart) => (position >= lineStart ? next + indent.length : next), position);
+
+      input.setRangeText(replacement, range.start, range.end, "preserve");
+      input.setSelectionRange(shiftPosition(selectionStart), shiftPosition(selectionEnd));
+    };
+
+    const outdentSelection = (input) => {
+      const value = input.value;
+      const selectionStart = input.selectionStart;
+      const selectionEnd = input.selectionEnd;
+      const range = getLineRange(input);
+      const block = value.slice(range.start, range.end);
+      const lines = block.split("\n");
+      const removals = [];
+      let offset = range.start;
+
+      const replacement = lines
+        .map((line) => {
+          const removeCount = line.startsWith(indent) ? indent.length : line.startsWith("\t") || line.startsWith(" ") ? 1 : 0;
+          if (removeCount) removals.push({ count: removeCount, start: offset });
+          offset += line.length + 1;
+          return line.slice(removeCount);
+        })
+        .join("\n");
+
+      if (!removals.length) return;
+
+      const shiftPosition = (position) =>
+        removals.reduce((next, removal) => {
+          if (position <= removal.start) return next;
+          return next - Math.min(removal.count, position - removal.start);
+        }, position);
+
+      input.setRangeText(replacement, range.start, range.end, "preserve");
+      input.setSelectionRange(shiftPosition(selectionStart), shiftPosition(selectionEnd));
+    };
+
+    inputs.forEach((input) => {
+      input.addEventListener(
+        "keydown",
+        (event) => {
+          if (event.defaultPrevented || event.key !== "Tab" || event.ctrlKey || event.metaKey || event.altKey) return;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          if (event.shiftKey) outdentSelection(input);
+          else indentSelection(input);
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          onChange();
+        },
+        true
+      );
+    });
+  };
+
+  const initHtmlTagSuggest = (htmlInput, onChange) => {
+    const wrap = getElement("htmlEditorWrap") || htmlInput.parentElement;
+    if (!wrap) return null;
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), Math.max(min, max));
+    const tagSuggestions = [
+      { name: "main", detail: "Konten utama halaman", snippet: "<main>\n  |\n</main>" },
+      { name: "section", detail: "Bagian konten", snippet: "<section>\n  |\n</section>" },
+      { name: "article", detail: "Artikel atau konten mandiri", snippet: "<article>\n  |\n</article>" },
+      { name: "header", detail: "Header halaman/bagian", snippet: "<header>\n  |\n</header>" },
+      { name: "footer", detail: "Footer halaman/bagian", snippet: "<footer>\n  |\n</footer>" },
+      { name: "nav", detail: "Navigasi link", snippet: "<nav>\n  |\n</nav>" },
+      { name: "div", detail: "Pembungkus umum", snippet: '<div class="">|</div>' },
+      { name: "span", detail: "Teks inline", snippet: "<span>|</span>" },
+      { name: "h1", detail: "Heading utama", snippet: "<h1>|</h1>" },
+      { name: "h2", detail: "Heading bagian", snippet: "<h2>|</h2>" },
+      { name: "h3", detail: "Heading kecil", snippet: "<h3>|</h3>" },
+      { name: "p", detail: "Paragraf", snippet: "<p>|</p>" },
+      { name: "a", detail: "Link", snippet: '<a href="#">|</a>' },
+      { name: "img", detail: "Gambar", snippet: '<img src="|" alt="">' },
+      { name: "ul", detail: "List bullet", snippet: "<ul>\n  <li>|</li>\n</ul>" },
+      { name: "ol", detail: "List bernomor", snippet: "<ol>\n  <li>|</li>\n</ol>" },
+      { name: "li", detail: "Item list", snippet: "<li>|</li>" },
+      { name: "form", detail: "Form input", snippet: "<form>\n  |\n</form>" },
+      { name: "label", detail: "Label input", snippet: '<label for="">|</label>' },
+      { name: "input", detail: "Input singkat", snippet: '<input id="|" type="text">' },
+      { name: "textarea", detail: "Input teks panjang", snippet: '<textarea id="">|</textarea>' },
+      { name: "button", detail: "Tombol aksi", snippet: '<button type="button">|</button>' },
+      { name: "table", detail: "Tabel data", snippet: "<table>\n  <tr>\n    <th>|</th>\n  </tr>\n</table>" },
+      { name: "tr", detail: "Baris tabel", snippet: "<tr>\n  |\n</tr>" },
+      { name: "th", detail: "Header tabel", snippet: "<th>|</th>" },
+      { name: "td", detail: "Sel tabel", snippet: "<td>|</td>" },
+      { name: "strong", detail: "Teks penting", snippet: "<strong>|</strong>" },
+      { name: "em", detail: "Teks penekanan", snippet: "<em>|</em>" },
+      { name: "br", detail: "Baris baru", snippet: "<br>" },
+      { name: "hr", detail: "Garis pemisah", snippet: "<hr>" }
+    ];
+    const voidTags = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+    const state = {
+      activeIndex: 0,
+      context: null,
+      items: []
+    };
+
+    const popover = document.createElement("div");
+    popover.className = "editor-suggestion-popover";
+    popover.hidden = true;
+    popover.setAttribute("role", "listbox");
+    popover.setAttribute("aria-label", "Saran tag HTML");
+
+    const mirror = document.createElement("div");
+    mirror.className = "textarea-caret-mirror";
+
+    wrap.append(popover, mirror);
+
+    const getContext = () => {
+      const caret = htmlInput.selectionStart;
+      if (caret !== htmlInput.selectionEnd) return null;
+      const beforeCaret = htmlInput.value.slice(0, caret);
+      const lastLt = beforeCaret.lastIndexOf("<");
+      if (lastLt < 0) return null;
+      const fragment = beforeCaret.slice(lastLt);
+      if (fragment.includes(">") || /\s/.test(fragment)) return null;
+      const match = fragment.match(/^<\/?([a-zA-Z][\w-]*)?$/);
+      if (!match) return null;
+      return {
+        closing: fragment.startsWith("</"),
+        prefix: (match[1] || "").toLowerCase(),
+        start: lastLt,
+        end: caret
+      };
+    };
+
+    const findOpenTags = () => {
+      const tokens = htmlInput.value.slice(0, htmlInput.selectionStart).match(/<\/?[a-zA-Z][\w-]*(?:\s[^<>]*)?>/g) || [];
+      const stack = [];
+      tokens.forEach((token) => {
+        const parsed = token.match(/^<\/?\s*([a-zA-Z][\w-]*)/);
+        if (!parsed) return;
+        const name = parsed[1].toLowerCase();
+        if (voidTags.has(name) || token.endsWith("/>")) return;
+        if (token.startsWith("</")) {
+          const index = stack.lastIndexOf(name);
+          if (index >= 0) stack.splice(index, 1);
+          return;
+        }
+        stack.push(name);
+      });
+      return stack.reverse();
+    };
+
+    const getItems = (context) => {
+      const source = context.closing
+        ? findOpenTags().map((name) => tagSuggestions.find((item) => item.name === name) || { name, detail: "Tag penutup", snippet: `</${name}>` })
+        : tagSuggestions;
+      const unique = [];
+      const seen = new Set();
+
+      source.forEach((item) => {
+        if (seen.has(item.name) || (context.prefix && !item.name.startsWith(context.prefix))) return;
+        seen.add(item.name);
+        unique.push(item);
+      });
+
+      return unique.slice(0, 8);
+    };
+
+    const syncMirrorStyle = () => {
+      const style = window.getComputedStyle(htmlInput);
+      [
+        "boxSizing",
+        "fontFamily",
+        "fontSize",
+        "fontStyle",
+        "fontWeight",
+        "letterSpacing",
+        "lineHeight",
+        "paddingTop",
+        "paddingRight",
+        "paddingBottom",
+        "paddingLeft",
+        "textTransform"
+      ].forEach((property) => {
+        mirror.style[property] = style[property];
+      });
+      mirror.style.borderStyle = "solid";
+      mirror.style.borderColor = "transparent";
+      mirror.style.borderTopWidth = style.borderTopWidth;
+      mirror.style.borderRightWidth = style.borderRightWidth;
+      mirror.style.borderBottomWidth = style.borderBottomWidth;
+      mirror.style.borderLeftWidth = style.borderLeftWidth;
+      mirror.style.width = `${htmlInput.clientWidth}px`;
+      mirror.style.minHeight = `${htmlInput.scrollHeight}px`;
+    };
+
+    const positionPopover = () => {
+      if (popover.hidden || !state.context) return;
+      syncMirrorStyle();
+      mirror.replaceChildren(document.createTextNode(htmlInput.value.slice(0, state.context.end)));
+      const marker = document.createElement("span");
+      marker.textContent = "\u200b";
+      mirror.append(marker);
+
+      const lineHeight = parseFloat(window.getComputedStyle(htmlInput).lineHeight) || 20;
+      const width = popover.offsetWidth || 286;
+      const height = popover.offsetHeight || 220;
+      const left = clamp(marker.offsetLeft - htmlInput.scrollLeft, 8, wrap.clientWidth - width - 8);
+      const lowerTop = marker.offsetTop - htmlInput.scrollTop + lineHeight + 6;
+      const upperTop = marker.offsetTop - htmlInput.scrollTop - height - 6;
+      const top = lowerTop + height < htmlInput.clientHeight ? lowerTop : clamp(upperTop, 8, htmlInput.clientHeight - height - 8);
+
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+    };
+
+    const close = () => {
+      popover.hidden = true;
+      state.context = null;
+      state.items = [];
+      state.activeIndex = 0;
+      wrap.closest(".editor-shell")?.classList.remove("suggestion-open");
+    };
+
+    const render = () => {
+      popover.innerHTML = state.items
+        .map(
+          (item, index) => `
+            <button class="editor-suggestion-option ${index === state.activeIndex ? "active" : ""}" type="button" role="option" aria-selected="${index === state.activeIndex}" data-suggestion-index="${index}">
+              <span class="editor-suggestion-kind">&lt;/&gt;</span>
+              <span class="editor-suggestion-main">
+                <span class="editor-suggestion-name">${escapeHTML(state.context.closing ? `/${item.name}` : item.name)}</span>
+                <span class="editor-suggestion-detail">${escapeHTML(item.detail)}</span>
+              </span>
+            </button>`
+        )
+        .join("");
+    };
+
+    const sync = () => {
+      const context = getContext();
+      if (!context) {
+        close();
+        return;
+      }
+
+      const items = getItems(context);
+      if (!items.length) {
+        close();
+        return;
+      }
+
+      const previousKey = state.context ? `${state.context.closing}:${state.context.prefix}` : "";
+      const nextKey = `${context.closing}:${context.prefix}`;
+      state.context = context;
+      state.items = items;
+      state.activeIndex = previousKey === nextKey ? clamp(state.activeIndex, 0, items.length - 1) : 0;
+      render();
+      popover.hidden = false;
+      wrap.closest(".editor-shell")?.classList.add("suggestion-open");
+      positionPopover();
+    };
+
+    const commit = (item = state.items[state.activeIndex]) => {
+      if (!item || !state.context) return;
+      const snippet = state.context.closing ? `</${item.name}>` : item.snippet;
+      const cursorIndex = snippet.indexOf("|");
+      const replacement = snippet.replace("|", "");
+      const selectionStart = state.context.start + (cursorIndex >= 0 ? cursorIndex : replacement.length);
+
+      htmlInput.setRangeText(replacement, state.context.start, state.context.end, "end");
+      htmlInput.setSelectionRange(selectionStart, selectionStart);
+      htmlInput.dispatchEvent(new Event("input", { bubbles: true }));
+      onChange();
+      close();
+      htmlInput.focus();
+    };
+
+    const moveActive = (direction) => {
+      if (!state.items.length) return;
+      state.activeIndex = (state.activeIndex + direction + state.items.length) % state.items.length;
+      render();
+      popover.querySelector(".editor-suggestion-option.active")?.scrollIntoView({ block: "nearest" });
+    };
+
+    htmlInput.addEventListener("input", () => window.requestAnimationFrame(sync));
+    htmlInput.addEventListener("click", sync);
+    htmlInput.addEventListener("keyup", (event) => {
+      if (["ArrowDown", "ArrowUp", "Enter", "Tab", "Escape"].includes(event.key)) return;
+      sync();
+    });
+    htmlInput.addEventListener(
+      "keydown",
+      (event) => {
+        if (popover.hidden) return;
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          moveActive(1);
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          moveActive(-1);
+        } else if (event.key === "Enter" || event.key === "Tab") {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          commit();
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          close();
+        }
+      },
+      true
+    );
+    htmlInput.addEventListener("scroll", positionPopover);
+    popover.addEventListener("pointerdown", (event) => {
+      const option = event.target.closest("[data-suggestion-index]");
+      if (!option) return;
+      event.preventDefault();
+      commit(state.items[Number(option.dataset.suggestionIndex)]);
+    });
+    document.addEventListener("pointerdown", (event) => {
+      if (popover.hidden) return;
+      if (popover.contains(event.target) || htmlInput.contains(event.target)) return;
+      close();
+    });
+    window.addEventListener("resize", sync);
+
+    return {
+      close,
+      sync
+    };
+  };
+
+  const initCssColorPicker = (cssInput, onChange) => {
+    const wrap = getElement("cssEditorWrap") || cssInput.parentElement;
+    if (!wrap) return null;
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), Math.max(min, max));
+    const namedColors = {
+      black: "#000000",
+      blue: "#0000FF",
+      cyan: "#00FFFF",
+      gray: "#808080",
+      green: "#008000",
+      grey: "#808080",
+      magenta: "#FF00FF",
+      orange: "#FFA500",
+      pink: "#FFC0CB",
+      purple: "#800080",
+      red: "#FF0000",
+      white: "#FFFFFF",
+      yellow: "#FFFF00"
+    };
+    const presets = ["#FFFFFF", "#111827", "#7C3AED", "#0EA5B7", "#16A36A", "#F97316", "#DC4C64", "#FBBF24", "#22C55E", "#38BDF8", "#A855F7", "#64748B"];
+    const namedPattern = Object.keys(namedColors).join("|");
+    const colorTokenPattern = new RegExp(`#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})(?![0-9a-fA-F])|\\b(?:rgba?|hsla?)\\(\\s*[^)]*\\)|\\b(?:${namedPattern})\\b`, "gi");
+    const state = {
+      color: null,
+      draggingMap: false,
+      token: null
+    };
+
+    const chip = document.createElement("button");
+    chip.className = "editor-color-chip";
+    chip.type = "button";
+    chip.hidden = true;
+    chip.setAttribute("aria-label", "Buka color picker");
+    chip.innerHTML = "<span></span>";
+
+    const popover = document.createElement("div");
+    popover.className = "editor-color-popover";
+    popover.hidden = true;
+    popover.innerHTML = `
+      <div class="editor-color-top">
+        <span class="editor-color-preview" data-color-preview></span>
+        <label class="editor-color-hex">
+          <span>HEX</span>
+          <input type="text" inputmode="text" maxlength="7" spellcheck="false" data-color-hex aria-label="Nilai warna hex" />
+        </label>
+        <button class="editor-color-close" type="button" data-color-close aria-label="Tutup color picker">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="editor-color-body">
+        <div class="editor-color-map" tabindex="0" data-color-map aria-label="Area saturation dan value warna">
+          <span class="editor-color-cursor" data-color-cursor></span>
+        </div>
+        <input class="editor-color-hue" type="range" min="0" max="360" value="0" data-color-hue aria-label="Hue warna" />
+      </div>
+      <div class="editor-color-presets">
+        ${presets.map((color) => `<button class="editor-color-preset" type="button" style="--preset-color: ${color}" data-color-preset="${color}" aria-label="Gunakan warna ${color}"></button>`).join("")}
+      </div>`;
+
+    const mirror = document.createElement("div");
+    mirror.className = "textarea-caret-mirror";
+
+    wrap.append(chip, popover, mirror);
+
+    const chipSwatch = chip.querySelector("span");
+    const preview = popover.querySelector("[data-color-preview]");
+    const hexInput = popover.querySelector("[data-color-hex]");
+    const closeButton = popover.querySelector("[data-color-close]");
+    const colorMap = popover.querySelector("[data-color-map]");
+    const colorCursor = popover.querySelector("[data-color-cursor]");
+    const hueInput = popover.querySelector("[data-color-hue]");
+
+    const componentToHex = (component) => Math.round(clamp(component, 0, 255)).toString(16).padStart(2, "0").toUpperCase();
+    const rgbToHex = ({ r, g, b }) => `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+
+    const normalizeHexColor = (value) => {
+      const raw = String(value).trim().replace(/^#/, "");
+      if (![3, 4, 6, 8].includes(raw.length) || /[^0-9a-f]/i.test(raw)) return null;
+      const expanded = raw.length <= 4 ? raw.split("").map((char) => char + char).join("") : raw;
+      return `#${expanded.slice(0, 6).toUpperCase()}`;
+    };
+
+    const hexToRgb = (value) => {
+      const hex = normalizeHexColor(value);
+      if (!hex) return null;
+      return {
+        r: parseInt(hex.slice(1, 3), 16),
+        g: parseInt(hex.slice(3, 5), 16),
+        b: parseInt(hex.slice(5, 7), 16)
+      };
+    };
+
+    const rgbToHsv = ({ r, g, b }) => {
+      const red = r / 255;
+      const green = g / 255;
+      const blue = b / 255;
+      const max = Math.max(red, green, blue);
+      const min = Math.min(red, green, blue);
+      const delta = max - min;
+      let h = 0;
+
+      if (delta) {
+        if (max === red) h = ((green - blue) / delta) % 6;
+        else if (max === green) h = (blue - red) / delta + 2;
+        else h = (red - green) / delta + 4;
+        h *= 60;
+        if (h < 0) h += 360;
+      }
+
+      return {
+        h,
+        s: max === 0 ? 0 : delta / max,
+        v: max
+      };
+    };
+
+    const hsvToRgb = ({ h, s, v }) => {
+      const hue = ((h % 360) + 360) % 360;
+      const chroma = v * s;
+      const x = chroma * (1 - Math.abs(((hue / 60) % 2) - 1));
+      const match = v - chroma;
+      let red = 0;
+      let green = 0;
+      let blue = 0;
+
+      if (hue < 60) [red, green, blue] = [chroma, x, 0];
+      else if (hue < 120) [red, green, blue] = [x, chroma, 0];
+      else if (hue < 180) [red, green, blue] = [0, chroma, x];
+      else if (hue < 240) [red, green, blue] = [0, x, chroma];
+      else if (hue < 300) [red, green, blue] = [x, 0, chroma];
+      else [red, green, blue] = [chroma, 0, x];
+
+      return {
+        r: (red + match) * 255,
+        g: (green + match) * 255,
+        b: (blue + match) * 255
+      };
+    };
+
+    const hslToRgb = (h, s, l) => {
+      const hue = ((h % 360) + 360) % 360;
+      const saturation = clamp(s, 0, 100) / 100;
+      const lightness = clamp(l, 0, 100) / 100;
+      const chroma = (1 - Math.abs(2 * lightness - 1)) * saturation;
+      const x = chroma * (1 - Math.abs(((hue / 60) % 2) - 1));
+      const match = lightness - chroma / 2;
+      let red = 0;
+      let green = 0;
+      let blue = 0;
+
+      if (hue < 60) [red, green, blue] = [chroma, x, 0];
+      else if (hue < 120) [red, green, blue] = [x, chroma, 0];
+      else if (hue < 180) [red, green, blue] = [0, chroma, x];
+      else if (hue < 240) [red, green, blue] = [0, x, chroma];
+      else if (hue < 300) [red, green, blue] = [x, 0, chroma];
+      else [red, green, blue] = [chroma, 0, x];
+
+      return {
+        r: (red + match) * 255,
+        g: (green + match) * 255,
+        b: (blue + match) * 255
+      };
+    };
+
+    const parseCssColor = (value) => {
+      const text = String(value).trim();
+      const lower = text.toLowerCase();
+      if (namedColors[lower]) return hexToRgb(namedColors[lower]);
+      if (text.startsWith("#")) return hexToRgb(text);
+
+      const numbers = text.match(/-?\d*\.?\d+%?/g) || [];
+      if (lower.startsWith("rgb") && numbers.length >= 3) {
+        const toRgbComponent = (part) => (part.endsWith("%") ? (parseFloat(part) / 100) * 255 : parseFloat(part));
+        return {
+          r: clamp(toRgbComponent(numbers[0]), 0, 255),
+          g: clamp(toRgbComponent(numbers[1]), 0, 255),
+          b: clamp(toRgbComponent(numbers[2]), 0, 255)
+        };
+      }
+
+      if (lower.startsWith("hsl") && numbers.length >= 3) {
+        const saturation = numbers[1].endsWith("%") ? parseFloat(numbers[1]) : parseFloat(numbers[1]);
+        const lightness = numbers[2].endsWith("%") ? parseFloat(numbers[2]) : parseFloat(numbers[2]);
+        return hslToRgb(parseFloat(numbers[0]), saturation, lightness);
+      }
+
+      return null;
+    };
+
+    const findColorToken = () => {
+      const selectionStart = cssInput.selectionStart;
+      const selectionEnd = cssInput.selectionEnd;
+      const hasSelection = selectionStart !== selectionEnd;
+      colorTokenPattern.lastIndex = 0;
+      let match;
+
+      while ((match = colorTokenPattern.exec(cssInput.value))) {
+        const start = match.index;
+        const end = start + match[0].length;
+        const insideToken = hasSelection ? selectionStart >= start && selectionEnd <= end : selectionStart >= start && selectionStart <= end;
+        if (insideToken && parseCssColor(match[0])) {
+          return { start, end, text: match[0] };
+        }
+      }
+
+      return null;
+    };
+
+    const renderPicker = () => {
+      if (!state.color) return;
+      const rgb = hsvToRgb(state.color);
+      const hex = rgbToHex(rgb);
+      chipSwatch.style.backgroundColor = hex;
+      preview.style.backgroundColor = hex;
+      hexInput.value = hex;
+      hueInput.value = Math.round(state.color.h);
+      colorMap.style.setProperty("--picker-hue", Math.round(state.color.h));
+      colorCursor.style.left = `${state.color.s * 100}%`;
+      colorCursor.style.top = `${(1 - state.color.v) * 100}%`;
+    };
+
+    const syncMirrorStyle = () => {
+      const style = window.getComputedStyle(cssInput);
+      [
+        "boxSizing",
+        "fontFamily",
+        "fontSize",
+        "fontStyle",
+        "fontWeight",
+        "letterSpacing",
+        "lineHeight",
+        "paddingTop",
+        "paddingRight",
+        "paddingBottom",
+        "paddingLeft",
+        "textTransform"
+      ].forEach((property) => {
+        mirror.style[property] = style[property];
+      });
+      mirror.style.borderStyle = "solid";
+      mirror.style.borderColor = "transparent";
+      mirror.style.borderTopWidth = style.borderTopWidth;
+      mirror.style.borderRightWidth = style.borderRightWidth;
+      mirror.style.borderBottomWidth = style.borderBottomWidth;
+      mirror.style.borderLeftWidth = style.borderLeftWidth;
+      mirror.style.width = `${cssInput.clientWidth}px`;
+      mirror.style.minHeight = `${cssInput.scrollHeight}px`;
+    };
+
+    const positionChip = () => {
+      if (!state.token) return;
+      syncMirrorStyle();
+      mirror.replaceChildren(document.createTextNode(cssInput.value.slice(0, state.token.start)));
+      const marker = document.createElement("span");
+      marker.textContent = "\u200b";
+      mirror.append(marker);
+
+      const lineHeight = parseFloat(window.getComputedStyle(cssInput).lineHeight) || 20;
+      const left = clamp(marker.offsetLeft - cssInput.scrollLeft - 30, 7, wrap.clientWidth - 31);
+      const top = clamp(marker.offsetTop - cssInput.scrollTop + lineHeight * 0.12, 7, cssInput.clientHeight - 31);
+      chip.style.left = `${left}px`;
+      chip.style.top = `${top}px`;
+    };
+
+    const positionPopover = () => {
+      if (popover.hidden) return;
+      const chipLeft = parseFloat(chip.style.left) || 8;
+      const chipTop = parseFloat(chip.style.top) || 8;
+      const popoverWidth = popover.offsetWidth;
+      const popoverHeight = popover.offsetHeight;
+      const left = clamp(chipLeft, 8, wrap.clientWidth - popoverWidth - 8);
+      const lowerTop = chipTop + 32;
+      const upperTop = chipTop - popoverHeight - 8;
+      const top = lowerTop + popoverHeight < cssInput.clientHeight ? lowerTop : clamp(upperTop, 8, cssInput.clientHeight - popoverHeight - 8);
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+    };
+
+    const closePopover = () => {
+      popover.hidden = true;
+      wrap.closest(".editor-shell")?.classList.remove("color-picker-open");
+    };
+
+    const syncFromSelection = () => {
+      const token = findColorToken();
+      if (!token) {
+        state.token = null;
+        chip.hidden = true;
+        closePopover();
+        return;
+      }
+
+      state.token = token;
+      state.color = rgbToHsv(parseCssColor(token.text));
+      renderPicker();
+      positionChip();
+      chip.hidden = false;
+      positionPopover();
+    };
+
+    const replaceActiveColor = (hex) => {
+      if (!state.token) return;
+      const start = state.token.start;
+      cssInput.setRangeText(hex, start, state.token.end, "select");
+      state.token = { start, end: start + hex.length, text: hex };
+      state.color = rgbToHsv(hexToRgb(hex));
+      renderPicker();
+      positionChip();
+      positionPopover();
+      cssInput.dispatchEvent(new Event("input", { bubbles: true }));
+      onChange();
+    };
+
+    const setColor = (nextColor, shouldReplace = true) => {
+      state.color = {
+        h: clamp(nextColor.h, 0, 360),
+        s: clamp(nextColor.s, 0, 1),
+        v: clamp(nextColor.v, 0, 1)
+      };
+      renderPicker();
+      if (shouldReplace) replaceActiveColor(rgbToHex(hsvToRgb(state.color)));
+    };
+
+    const updateFromMapPoint = (event) => {
+      if (!state.color) return;
+      const rect = colorMap.getBoundingClientRect();
+      const s = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+      const v = clamp(1 - (event.clientY - rect.top) / rect.height, 0, 1);
+      setColor({ ...state.color, s, v });
+    };
+
+    const openPopover = () => {
+      if (!state.token) syncFromSelection();
+      if (!state.token) return;
+      popover.hidden = false;
+      wrap.closest(".editor-shell")?.classList.add("color-picker-open");
+      renderPicker();
+      positionPopover();
+      hexInput.focus();
+      hexInput.select();
+    };
+
+    chip.addEventListener("click", (event) => {
+      event.preventDefault();
+      openPopover();
+    });
+
+    closeButton.addEventListener("click", closePopover);
+
+    colorMap.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      state.draggingMap = true;
+      colorMap.setPointerCapture?.(event.pointerId);
+      updateFromMapPoint(event);
+    });
+
+    colorMap.addEventListener("pointermove", (event) => {
+      if (!state.draggingMap) return;
+      updateFromMapPoint(event);
+    });
+
+    colorMap.addEventListener("pointerup", (event) => {
+      state.draggingMap = false;
+      colorMap.releasePointerCapture?.(event.pointerId);
+    });
+
+    colorMap.addEventListener("keydown", (event) => {
+      if (!state.color || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+      event.preventDefault();
+      const step = event.shiftKey ? 0.1 : 0.025;
+      const nextColor = { ...state.color };
+      if (event.key === "ArrowLeft") nextColor.s -= step;
+      if (event.key === "ArrowRight") nextColor.s += step;
+      if (event.key === "ArrowUp") nextColor.v += step;
+      if (event.key === "ArrowDown") nextColor.v -= step;
+      setColor(nextColor);
+    });
+
+    hueInput.addEventListener("input", () => {
+      if (!state.color) return;
+      setColor({ ...state.color, h: Number(hueInput.value) });
+    });
+
+    hexInput.addEventListener("input", () => {
+      const hex = normalizeHexColor(hexInput.value.startsWith("#") ? hexInput.value : `#${hexInput.value}`);
+      hexInput.toggleAttribute("aria-invalid", !hex);
+      if (!hex) return;
+      state.color = rgbToHsv(hexToRgb(hex));
+      replaceActiveColor(hex);
+    });
+
+    popover.querySelectorAll("[data-color-preset]").forEach((button) => {
+      button.addEventListener("click", () => {
+        replaceActiveColor(button.dataset.colorPreset);
+      });
+    });
+
+    cssInput.addEventListener("click", syncFromSelection);
+    cssInput.addEventListener("keyup", syncFromSelection);
+    cssInput.addEventListener("select", syncFromSelection);
+    cssInput.addEventListener("input", () => window.requestAnimationFrame(syncFromSelection));
+    cssInput.addEventListener("scroll", () => {
+      if (!state.token) return;
+      positionChip();
+      positionPopover();
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      if (popover.hidden) return;
+      if (popover.contains(event.target) || chip.contains(event.target)) return;
+      closePopover();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closePopover();
+    });
+
+    window.addEventListener("resize", syncFromSelection);
+
+    return {
+      close: closePopover,
+      sync: syncFromSelection
+    };
+  };
+
+  const initPhpEditorEnhancements = () => {
+    if (document.body.dataset.editorEnhancements === "php") return;
+    const indexInput = getElement("routesEditor");
+    const dataInput = getElement("controllerEditor");
+    const templateInput = getElement("bladeEditor");
+    const cssInput = getElement("cssEditor");
+    if (!indexInput || !dataInput || !templateInput || !cssInput) return;
+
+    document.body.dataset.editorEnhancements = "php";
+    const inputs = [indexInput, dataInput, templateInput, cssInput];
+    editorTagSuggest = initHtmlTagSuggest(templateInput, runPhpEditorPreview);
+    editorColorPicker = initCssColorPicker(cssInput, runPhpEditorPreview);
+    editorUndoHistory = initEditorUndoHistory(inputs, runPhpEditorPreview);
+    initEditorTabBehavior(inputs, runPhpEditorPreview);
+
+    getElement("resetEditor")?.addEventListener("click", () => {
+      window.requestAnimationFrame(() => {
+        editorUndoHistory?.reset();
+        editorTagSuggest?.close();
+        editorColorPicker?.close();
+        editorColorPicker?.sync();
+      });
+    });
+  };
+
   const handleClick = (event) => {
     const projectPreviewButton = event.target.closest("[data-open-project-preview]");
     if (projectPreviewButton) {
@@ -1113,6 +2040,7 @@ window.PhpLabApp = (() => {
     renderProjects();
     updateProgress();
     window.PhpLabEditor?.init();
+    initPhpEditorEnhancements();
 
     getElement("darkModeToggle")?.addEventListener("click", toggleDarkMode);
     getElement("resetProgress")?.addEventListener("click", () => {
