@@ -7,6 +7,7 @@ window.PhpLabLayout = (() => {
     { id: "editor", label: "Editor", href: "editor.html" },
     { id: "quiz", label: "Quiz", href: "quiz.html" },
     { id: "projects", label: "Project", href: "projects.html" },
+    { id: "deploy", label: "Deploy", href: "deploy.html" },
     { id: "progress", label: "Progress", href: "progress.html" }
   ];
 
@@ -76,7 +77,7 @@ window.PhpLabLayout = (() => {
       <footer class="site-footer">
         <div class="container">
           <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
-            <span><strong>PHP Beginner Lab</strong> &middot; Belajar PHP dasar untuk web dinamis setelah HTML, CSS, dan JavaScript.</span>
+            <span><strong>PHP Beginner Lab</strong> &middot; Belajar PHP dengan bahasa sederhana sampai project siap deploy.</span>
             <a href="${rootPath}index.html">Kembali ke home</a>
           </div>
         </div>
