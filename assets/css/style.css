@@ -549,6 +549,247 @@ body.dark-mode .brand-logo-dark {
   font-size: 0.75rem;
 }
 
+.learning-path-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.learning-path-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-xs);
+  min-width: 0;
+  padding: 1rem;
+  position: relative;
+}
+
+.learning-path-card::before {
+  background: linear-gradient(180deg, var(--orange), var(--cyan));
+  border-radius: 99px;
+  content: "";
+  inset: 1rem auto 1rem 0;
+  position: absolute;
+  width: 3px;
+}
+
+.learning-path-icon {
+  align-items: center;
+  background: color-mix(in srgb, var(--cyan) 12%, var(--surface));
+  border-radius: 12px;
+  color: var(--cyan);
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+  width: 40px;
+}
+
+.learning-path-card h3 {
+  font-size: 0.98rem;
+  margin: 0.42rem 0 0.45rem;
+}
+
+.learning-path-card p {
+  font-size: 0.8rem;
+  margin-bottom: 0.72rem;
+}
+
+.learning-path-card strong {
+  color: var(--text);
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.learning-path-link {
+  align-items: center;
+  color: var(--primary);
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 800;
+  gap: 0.32rem;
+  margin-top: 0.78rem;
+}
+
+.learning-path-link:hover,
+.learning-path-link:focus {
+  color: var(--primary-strong);
+}
+
+.learner-profile-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.learner-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.1rem;
+}
+
+.learner-card-head {
+  align-items: center;
+  display: flex;
+  gap: 0.65rem;
+}
+
+.learner-card-head span {
+  align-items: center;
+  background: color-mix(in srgb, var(--orange) 12%, var(--surface));
+  border-radius: 12px;
+  color: var(--orange);
+  display: inline-flex;
+  flex: 0 0 40px;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.learner-card:nth-child(2) .learner-card-head span {
+  background: color-mix(in srgb, var(--cyan) 12%, var(--surface));
+  color: var(--cyan);
+}
+
+.learner-card:nth-child(3) .learner-card-head span {
+  background: color-mix(in srgb, var(--green) 12%, var(--surface));
+  color: var(--green);
+}
+
+.learner-card-head strong {
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.learner-card h3 {
+  font-size: 1.08rem;
+  margin: 0.9rem 0 0.45rem;
+}
+
+.learner-card p,
+.learner-card li {
+  color: var(--muted);
+  font-size: 0.83rem;
+}
+
+.learner-card ul {
+  display: grid;
+  gap: 0.34rem;
+  margin: 0.2rem 0 1rem;
+  padding-left: 1rem;
+}
+
+.learner-card .btn {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.learning-flow-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.flow-step {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  min-width: 0;
+  padding: 1rem;
+  position: relative;
+}
+
+.flow-step::after {
+  background: linear-gradient(90deg, var(--orange), var(--cyan));
+  border-radius: 99px;
+  bottom: 0;
+  content: "";
+  height: 3px;
+  left: 1rem;
+  position: absolute;
+  right: 1rem;
+}
+
+.flow-number {
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.flow-step i {
+  color: var(--cyan);
+  display: block;
+  font-size: 1.3rem;
+  margin: 0.38rem 0 0.72rem;
+}
+
+.flow-step h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.flow-step p {
+  font-size: 0.78rem;
+  margin: 0 0 0.5rem;
+}
+
+.lesson-toolbar {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+}
+
+.lesson-toolbar strong {
+  color: var(--text);
+  display: block;
+  font-size: 0.92rem;
+}
+
+.phase-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: flex-end;
+}
+
+.phase-filter-btn {
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  min-height: 36px;
+  padding: 0.38rem 0.72rem;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.phase-filter-btn:hover,
+.phase-filter-btn:focus,
+.phase-filter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 .feature-card {
   overflow: hidden;
   padding: 1.4rem;
@@ -644,6 +885,8 @@ body.dark-mode .brand-logo-dark {
 
 .lesson-card {
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   padding: 1rem;
   position: relative;
@@ -677,6 +920,39 @@ body.dark-mode .brand-logo-dark {
 .lesson-card p {
   font-size: 0.76rem;
   margin: 0;
+}
+
+.lesson-card-goal {
+  min-height: 3.4em;
+}
+
+.lesson-practice,
+.lesson-card-time {
+  align-items: flex-start;
+  color: var(--muted);
+  display: flex;
+  font-size: 0.72rem;
+  gap: 0.42rem;
+  line-height: 1.45;
+}
+
+.lesson-practice {
+  background: color-mix(in srgb, var(--cyan) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--cyan) 18%, var(--line));
+  border-radius: 11px;
+  margin-top: 0.75rem;
+  padding: 0.58rem;
+}
+
+.lesson-practice i,
+.lesson-card-time i {
+  color: var(--cyan);
+  flex-shrink: 0;
+  margin-top: 0.12rem;
+}
+
+.lesson-card-time {
+  margin-top: 0.65rem;
 }
 
 .lesson-card .complete-mark {
@@ -769,6 +1045,54 @@ body.dark-mode .brand-logo-dark {
   border-left-color: var(--green);
 }
 
+.quick-start-block {
+  background: color-mix(in srgb, var(--orange) 7%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--orange) 24%, var(--line));
+  border-radius: 17px;
+  margin-bottom: 0.75rem;
+  padding: 1rem !important;
+}
+
+.quick-start-head {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.quick-start-head strong {
+  color: var(--orange);
+  font-size: 0.78rem;
+}
+
+.quick-start-grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.quick-start-grid article {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.quick-start-grid span {
+  color: var(--text);
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 800;
+  margin-bottom: 0.28rem;
+}
+
+.quick-start-grid p {
+  font-size: 0.76rem;
+  margin: 0;
+}
+
 .beginner-start-block {
   background: linear-gradient(135deg, var(--primary-soft), color-mix(in srgb, var(--cyan) 8%, var(--surface)));
   border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--line));
@@ -796,12 +1120,33 @@ body.dark-mode .brand-logo-dark {
   padding: 0.8rem;
 }
 
+.learning-goal-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.8rem;
+}
+
+.learning-goal-grid > div {
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 0.8rem;
+}
+
 .beginner-overview strong,
+.learning-goal-grid strong,
 .term-card strong {
   color: var(--text);
   display: block;
   font-size: 0.82rem;
   margin-bottom: 0.25rem;
+}
+
+.learning-goal-grid p {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin: 0;
 }
 
 .beginner-steps {
@@ -3271,6 +3616,19 @@ body.dark-mode .project-example-window {
     flex-wrap: wrap;
   }
 
+  .lesson-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .phase-filter {
+    justify-content: flex-start;
+  }
+
+  .quick-start-grid {
+    grid-template-columns: 1fr;
+  }
+
   .debug-navigation .mini-label {
     flex-basis: 100%;
     order: -1;
@@ -3435,6 +3793,16 @@ body.dark-mode .project-example-window {
 
   .path-card span {
     font-size: 0.7rem;
+  }
+
+  .learner-card .btn,
+  .lesson-toolbar .phase-filter-btn {
+    width: 100%;
+  }
+
+  .phase-filter {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lesson-actions .btn,
