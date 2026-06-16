@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Checklist deploy project PHP untuk pemula: cek lokal, keamanan dasar, konfigurasi, upload, dan uji hosting." />
+    <title>Checklist Deploy PHP | PHP Beginner Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body data-page="deploy">
+    <div id="appNav"></div>
+    <main>
+      <section class="page-hero">
+        <div class="container">
+          <span class="eyebrow"><i class="bi bi-cloud-arrow-up"></i> Checklist Deploy</span>
+          <h1>Pastikan project PHP siap dipindahkan ke hosting</h1>
+          <p>Gunakan halaman ini setelah mini project berjalan di localhost. Tujuannya sederhana: project tidak error, input aman, folder rapi, dan pengaturan penting mudah diubah.</p>
+        </div>
+      </section>
+
+      <section class="section-block compact-section">
+        <div class="container">
+          <div class="section-heading centered-heading">
+            <span class="eyebrow">Urutan aman</span>
+            <h2>Lima langkah sebelum upload</h2>
+            <p>Ikuti dari atas ke bawah. Kalau satu langkah belum beres, selesaikan dulu sebelum lanjut.</p>
+          </div>
+          <div class="tutorial-section-list">
+            <article class="tutorial-section-card">
+              <div class="tutorial-section-head">
+                <span>01</span>
+                <div>
+                  <h4>Coba semua fitur di localhost</h4>
+                  <p>Project harus bisa dijalankan dengan server lokal sebelum dipindahkan.</p>
+                </div>
+              </div>
+              <ol class="tutorial-step-list">
+                <li>Jalankan <code>php -S localhost:8000</code>.</li>
+                <li>Coba buka halaman utama, kirim form, simpan data, edit, hapus, dan upload jika ada.</li>
+                <li>Catat error yang muncul lalu perbaiki satu per satu.</li>
+              </ol>
+            </article>
+
+            <article class="tutorial-section-card">
+              <div class="tutorial-section-head">
+                <span>02</span>
+                <div>
+                  <h4>Amankan input dan output</h4>
+                  <p>Semua data dari pengguna harus diperiksa sebelum dipakai.</p>
+                </div>
+              </div>
+              <ol class="tutorial-step-list">
+                <li>Gunakan <code>trim</code> dan cek field kosong.</li>
+                <li>Gunakan <code>htmlspecialchars</code> saat menampilkan input pengguna.</li>
+                <li>Gunakan <code>prepare</code> dan <code>execute</code> untuk query database.</li>
+              </ol>
+            </article>
+
+            <article class="tutorial-section-card">
+              <div class="tutorial-section-head">
+                <span>03</span>
+                <div>
+                  <h4>Rapikan folder dan konfigurasi</h4>
+                  <p>Project yang rapi lebih mudah diperbaiki saat sudah online.</p>
+                </div>
+              </div>
+              <ol class="tutorial-step-list">
+                <li>Simpan asset di folder <code>assets</code> atau <code>public</code>.</li>
+                <li>Simpan file data di folder khusus, misalnya <code>data</code>.</li>
+                <li>Pisahkan koneksi database ke file <code>config.php</code>.</li>
+              </ol>
+            </article>
+
+            <article class="tutorial-section-card">
+              <div class="tutorial-section-head">
+                <span>04</span>
+                <div>
+                  <h4>Matikan error detail untuk pengunjung</h4>
+                  <p>Error detail berguna saat belajar, tetapi tidak cocok ditampilkan di website online.</p>
+                </div>
+              </div>
+              <div class="tutorial-code-list">
+                <div>
+                  <div class="tutorial-file-note">
+                    <strong>production.php</strong>
+                    <span>Contoh pengaturan sederhana.</span>
+                  </div>
+                  <div class="code-card">
+                    <div class="code-card-head"><span class="code-card-title"><i class="bi bi-filetype-php"></i> production.php</span></div>
+                    <div class="code-lines">
+                      <div class="code-line"><span class="line-no">1</span><span class="line-code">&lt;?php</span></div>
+                      <div class="code-line"><span class="line-no">2</span><span class="line-code">ini_set("display_errors", "0");</span></div>
+                      <div class="code-line"><span class="line-no">3</span><span class="line-code">error_reporting(E_ALL);</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="tutorial-section-card">
+              <div class="tutorial-section-head">
+                <span>05</span>
+                <div>
+                  <h4>Upload dan uji ulang</h4>
+                  <p>Setelah upload, cek lagi dari browser seperti pengunjung biasa.</p>
+                </div>
+              </div>
+              <ol class="tutorial-step-list">
+                <li>Upload file project ke folder website hosting.</li>
+                <li>Buat database dan sesuaikan nama host, user, password, dan database.</li>
+                <li>Buka website, coba fitur utama, lalu cek apakah data benar-benar tersimpan.</li>
+              </ol>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div id="appFooter"></div>
+    <div id="appToast"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/progress.js"></script>
+    <script src="assets/js/layout.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

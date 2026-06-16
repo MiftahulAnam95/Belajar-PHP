@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Mini project PHP sederhana untuk pemula." />
-    <title>Mini Project | PHP Beginner Lab</title>
+    <meta name="description" content="Mini project PHP sederhana untuk pemula dengan panduan fitur dan checklist siap deploy." />
+    <title>Mini Project Siap Deploy | PHP Beginner Lab</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -19,11 +19,27 @@
       <section class="page-hero">
         <div class="container">
           <span class="eyebrow"><i class="bi bi-rocket-takeoff"></i> Mini Project</span>
-          <h1>Ubah konsep PHP kecil menjadi fitur nyata</h1>
-          <p>Pilih project dari materi yang sudah dipelajari: form, validasi, array, session, file JSON, database, CRUD, upload, dan dashboard sederhana.</p>
+          <h1>Ubah konsep PHP kecil menjadi project siap deploy</h1>
+          <p>Pilih project dari materi yang sudah dipelajari: form, validasi, array, session, file JSON, database, CRUD, upload, dashboard sederhana, dan pengecekan akhir sebelum upload ke hosting.</p>
         </div>
       </section>
-      <section class="section-block" id="projects">
+      <section class="section-block compact-section">
+        <div class="container">
+          <div class="section-heading centered-heading">
+            <span class="eyebrow">Sebelum deploy</span>
+            <h2>Project dianggap siap jika lulus 5 cek sederhana</h2>
+            <p>Checklist ini sengaja pendek agar mudah diingat pemula, tetapi cukup penting untuk project PHP pertama.</p>
+          </div>
+          <div class="row g-3">
+            <div class="col-md"><article class="feature-card h-100"><span class="feature-icon orange"><i class="bi bi-folder2-open"></i></span><h3>Folder rapi</h3><p>File utama, data, asset, dan upload tidak tercampur sembarangan.</p></article></div>
+            <div class="col-md"><article class="feature-card h-100"><span class="feature-icon cyan"><i class="bi bi-shield-check"></i></span><h3>Input aman</h3><p>Form divalidasi, output memakai htmlspecialchars, dan query memakai prepare.</p></article></div>
+            <div class="col-md"><article class="feature-card h-100"><span class="feature-icon violet"><i class="bi bi-gear"></i></span><h3>Config terpisah</h3><p>Koneksi database dan pengaturan penting mudah diubah saat pindah hosting.</p></article></div>
+            <div class="col-md"><article class="feature-card h-100"><span class="feature-icon orange"><i class="bi bi-bug"></i></span><h3>Error dicek</h3><p>Error detail dipakai saat belajar, lalu dimatikan untuk mode production.</p></article></div>
+            <div class="col-md"><article class="feature-card h-100"><span class="feature-icon cyan"><i class="bi bi-cloud-arrow-up"></i></span><h3>Siap upload</h3><p>Sudah dicoba di localhost dan punya catatan file mana yang perlu diunggah.</p></article></div>
+          </div>
+        </div>
+      </section>
+      <section class="section-block alt-section" id="projects">
         <div class="container"><div class="row g-3 g-lg-4" id="projectGrid"></div></div>
       </section>
     </main>
