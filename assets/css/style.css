@@ -748,7 +748,8 @@ body.dark-mode .brand-logo-dark {
 .analogy-box,
 .practice-box,
 .explanation-box,
-.hint-box {
+.hint-box,
+.deploy-note-box {
   background: var(--surface-soft);
   border-left: 3px solid var(--primary);
   border-radius: 0 13px 13px 0;
@@ -761,6 +762,11 @@ body.dark-mode .brand-logo-dark {
 
 .hint-box {
   border-left-color: var(--warning);
+}
+
+.deploy-note-box {
+  background: color-mix(in srgb, var(--green) 8%, var(--surface));
+  border-left-color: var(--green);
 }
 
 .beginner-start-block {
@@ -2877,6 +2883,31 @@ body.dark-mode .project-preview-modal .btn-close {
   color: var(--primary);
   cursor: pointer;
   font-weight: 800;
+}
+
+.project-deploy-check {
+  background: color-mix(in srgb, var(--green) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--green) 22%, var(--line));
+  border-radius: 12px;
+  margin-top: 0.75rem;
+  padding: 0.72rem;
+}
+
+.project-deploy-check strong {
+  color: var(--text);
+  display: block;
+  font-size: 0.78rem;
+  margin-bottom: 0.35rem;
+}
+
+.project-deploy-check ul {
+  margin: 0;
+  padding-left: 1.05rem;
+}
+
+.project-deploy-check li {
+  color: var(--muted);
+  font-size: 0.74rem;
 }
 
 .progress-section {
