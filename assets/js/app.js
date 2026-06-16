@@ -4,6 +4,7 @@ window.PhpLabApp = (() => {
   let currentQuiz = { index: 0, score: 0, answered: false };
   let activeRecallId = data.recallChallenges[0].id;
   let activeDebugId = data.debugChallenges[0].id;
+  let activeLessonPhase = "all";
   const debugAttempts = {};
   const LESSON_RECALL_STORAGE_KEY = "php-beginner-lab-lesson-recall-v1";
   let toastInstance;
@@ -215,24 +216,123 @@ window.PhpLabApp = (() => {
     showToast(`Badge baru: ${unlocked.join(", ")}`);
   };
 
+  const getLessonPhases = () => [...new Set(data.lessons.map((item) => item.phase).filter(Boolean))];
+
+  const renderLearnerProfiles = () => {
+    const target = getElement("learnerProfileGrid");
+    if (!target || !Array.isArray(data.learnerProfiles)) return;
+
+    target.innerHTML = data.learnerProfiles
+      .map(
+        (profile) => `
+          <article class="learner-card">
+            <div class="learner-card-head">
+              <span><i class="bi ${profile.icon}"></i></span>
+              <strong>${escapeHTML(profile.label)}</strong>
+            </div>
+            <h3>${escapeHTML(profile.title)}</h3>
+            <p>${escapeHTML(profile.description)}</p>
+            <ul>
+              ${profile.focus.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}
+            </ul>
+            <a class="btn btn-soft" href="${lessonHref(profile.startLesson)}">
+              ${escapeHTML(profile.cta)} <i class="bi bi-arrow-right"></i>
+            </a>
+          </article>`
+      )
+      .join("");
+  };
+
+  const renderLearningFlow = () => {
+    const target = getElement("learningFlowGrid");
+    if (!target || !Array.isArray(data.learningFlow)) return;
+
+    target.innerHTML = data.learningFlow
+      .map(
+        (step, index) => `
+          <article class="flow-step">
+            <span class="flow-number">${index + 1}</span>
+            <i class="bi ${step.icon}"></i>
+            <h3>${escapeHTML(step.title)}</h3>
+            <p>${escapeHTML(step.description)}</p>
+          </article>`
+      )
+      .join("");
+  };
+
+  const renderLessonPhaseFilter = () => {
+    const target = getElement("lessonPhaseFilter");
+    if (!target) return;
+    const phases = getLessonPhases();
+
+    target.innerHTML = `
+      <button class="phase-filter-btn ${activeLessonPhase === "all" ? "active" : ""}" type="button" data-lesson-phase="all">
+        Semua
+      </button>
+      ${phases
+        .map(
+          (phase) => `
+            <button class="phase-filter-btn ${activeLessonPhase === phase ? "active" : ""}" type="button" data-lesson-phase="${escapeHTML(phase)}">
+              ${escapeHTML(phase)}
+            </button>`
+        )
+        .join("")}`;
+  };
+
+  const renderLearningPath = () => {
+    const learningPathGrid = getElement("learningPathGrid");
+    if (!learningPathGrid || !Array.isArray(data.learningPath)) return;
+    learningPathGrid.innerHTML = data.learningPath
+      .map(
+        (level) => `
+          <article class="learning-path-card">
+            <span class="learning-path-icon"><i class="bi ${level.icon}"></i></span>
+            <span class="mini-label">${escapeHTML(level.range)}</span>
+            <h3>${escapeHTML(level.title)}</h3>
+            <p>${escapeHTML(level.goal)}</p>
+            <strong>${escapeHTML(level.outcome)}</strong>
+            ${
+              level.startLesson
+                ? `<a class="learning-path-link" href="${lessonHref(level.startLesson)}">Mulai level ini <i class="bi bi-arrow-right"></i></a>`
+                : ""
+            }
+          </article>`
+      )
+      .join("");
+  };
+
   const renderLessons = () => {
     const lessonGrid = getElement("lessonGrid");
     if (!lessonGrid) return;
     const completed = progress.state.completedLessons;
-    lessonGrid.innerHTML = data.lessons
+    const filteredLessons =
+      activeLessonPhase === "all" ? data.lessons : data.lessons.filter((item) => item.phase === activeLessonPhase);
+    lessonGrid.innerHTML = filteredLessons
       .map(
-        (item, index) => `
+        (item) => {
+          const index = data.lessons.findIndex((lessonItem) => lessonItem.id === item.id);
+          return `
           <a class="lesson-card text-start ${completed.includes(item.id) ? "completed" : ""}" href="${lessonHref(item.id)}">
             ${completed.includes(item.id) ? '<i class="bi bi-check-circle-fill complete-mark"></i>' : ""}
             <span class="lesson-icon"><i class="bi ${item.icon}"></i></span>
-            <span class="lesson-number d-block mt-3">Materi ${String(index + 1).padStart(2, "0")}</span>
+            <span class="lesson-number d-block mt-3">${escapeHTML(item.phase || "Materi")} &middot; Materi ${String(index + 1).padStart(2, "0")}</span>
             <h3>${escapeHTML(item.title)}</h3>
-            <p><i class="bi bi-clock"></i> ${escapeHTML(item.duration)}</p>
-          </a>`
+            <p class="lesson-card-goal">${escapeHTML(item.outcome || item.goal)}</p>
+            <span class="lesson-practice"><i class="bi bi-pencil-square"></i> ${escapeHTML(item.practiceNow || item.exercise)}</span>
+            <span class="lesson-card-time"><i class="bi bi-clock"></i> ${escapeHTML(item.duration)}</span>
+          </a>`;
+        }
       )
       .join("");
     const roadmapCompleted = getElement("roadmapCompleted");
     if (roadmapCompleted) roadmapCompleted.textContent = `${completed.length}/${data.lessons.length}`;
+    const lessonFilterCount = getElement("lessonFilterCount");
+    if (lessonFilterCount) {
+      lessonFilterCount.textContent =
+        activeLessonPhase === "all"
+          ? `${data.lessons.length} materi`
+          : `${filteredLessons.length} materi di ${activeLessonPhase}`;
+    }
   };
 
   const renderLessonQuiz = (item) => `
@@ -303,6 +403,28 @@ window.PhpLabApp = (() => {
       </section>`;
   };
 
+  const renderLessonQuickStart = (item, lessonIndex) => `
+    <section class="detail-block quick-start-block">
+      <div class="quick-start-head">
+        <span class="beginner-label"><i class="bi bi-stopwatch"></i> Ringkasan 3 menit</span>
+        <strong>Materi ${String(lessonIndex + 1).padStart(2, "0")}</strong>
+      </div>
+      <div class="quick-start-grid">
+        <article>
+          <span>Kenapa belajar ini?</span>
+          <p>${escapeHTML(item.problem)}</p>
+        </article>
+        <article>
+          <span>Apa yang diketik?</span>
+          <p>${escapeHTML(item.practiceNow || item.exercise)}</p>
+        </article>
+        <article>
+          <span>Kapan boleh lanjut?</span>
+          <p>${escapeHTML(item.checkpoint)}</p>
+        </article>
+      </div>
+    </section>`;
+
   const renderLessonDetail = (id) => {
     const item = data.lessons.find((lessonItem) => lessonItem.id === id);
     const lessonDetail = getElement("lessonDetail");
@@ -316,7 +438,7 @@ window.PhpLabApp = (() => {
         <header class="lesson-detail-head">
           <div class="d-flex justify-content-between gap-3">
             <div>
-              <span class="eyebrow">Materi ${String(lessonIndex + 1).padStart(2, "0")} &middot; ${escapeHTML(item.duration)}</span>
+              <span class="eyebrow">${escapeHTML(item.phase || "Materi")} &middot; Materi ${String(lessonIndex + 1).padStart(2, "0")} &middot; ${escapeHTML(item.duration)}</span>
               <h2 class="mt-2 mb-1">${escapeHTML(item.title)}</h2>
               <p class="mb-0">${escapeHTML(item.goal)}</p>
             </div>
@@ -326,17 +448,28 @@ window.PhpLabApp = (() => {
           </div>
         </header>
         <div class="lesson-detail-body">
+          ${renderLessonQuickStart(item, lessonIndex)}
           <section class="detail-block beginner-start-block">
             <span class="beginner-label"><i class="bi bi-signpost-split"></i> Mulai dari sini</span>
-            <h3 class="mt-2"><i class="bi bi-person-walking"></i> Sebelum memulai materi ini</h3>
+            <h3 class="mt-2"><i class="bi bi-person-walking"></i> ${escapeHTML(item.phaseTitle || "Sebelum memulai materi ini")}</h3>
             <p>${escapeHTML(item.prerequisite)}</p>
             <div class="beginner-overview">
-              <strong>Fokus belajarmu</strong>
+              <strong>Bahasa awam</strong>
               <p class="mb-0">${escapeHTML(item.overview)}</p>
             </div>
             <div class="beginner-overview">
-              <strong>Kalau dijelaskan ke anak SD</strong>
+              <strong>Setelah ini kamu bisa</strong>
               <p class="mb-0">${escapeHTML(item.kidGoal)}</p>
+            </div>
+            <div class="learning-goal-grid">
+              <div>
+                <strong>Praktik 10 menit</strong>
+                <p>${escapeHTML(item.practiceNow || item.exercise)}</p>
+              </div>
+              <div>
+                <strong>Nyambung ke project</strong>
+                <p>${escapeHTML(item.projectThread || item.tinyProject)}</p>
+              </div>
             </div>
           </section>
           <section class="detail-block">
@@ -459,7 +592,11 @@ window.PhpLabApp = (() => {
     const nextLesson = data.lessons[lessonIndex + 1];
     return `
       <div class="next-learning-panel" id="nextLearningPanel">
-        <p><strong>Bagus!</strong> Kamu sudah menyelesaikan materi ini. Mau lanjut atau kembali ke daftar materi?</p>
+        <p><strong>Bagus!</strong> Kamu sudah menyelesaikan materi ini. ${
+          nextLesson
+            ? `Langkah berikutnya: ${escapeHTML(nextLesson.title)} agar kamu bisa ${escapeHTML(nextLesson.outcome || nextLesson.goal).toLowerCase()}`
+            : "Sekarang waktunya merakit mini project dan mengecek kesiapan deploy."
+        }</p>
         <a class="btn btn-soft" href="${rootPath}materi.html#materi"><i class="bi bi-grid"></i> Kembali ke Daftar Materi</a>
         ${
           nextLesson
@@ -1894,6 +2031,15 @@ window.PhpLabApp = (() => {
       return;
     }
 
+    const phaseButton = event.target.closest("[data-lesson-phase]");
+    if (phaseButton) {
+      activeLessonPhase = phaseButton.dataset.lessonPhase;
+      renderLessonPhaseFilter();
+      renderLessons();
+      getElement("lessonGrid")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
+
     const lessonButton = event.target.closest("[data-open-lesson]");
     if (lessonButton) {
       openLesson(lessonButton.dataset.openLesson);
@@ -2054,6 +2200,10 @@ window.PhpLabApp = (() => {
     document.body.classList.toggle("dark-mode", progress.state.darkMode);
     updateThemeToggle();
     progress.unlockBadges();
+    renderLearnerProfiles();
+    renderLearningFlow();
+    renderLessonPhaseFilter();
+    renderLearningPath();
     renderLessons();
     renderQuiz();
     renderRecallChallenge();
@@ -2091,6 +2241,7 @@ window.PhpLabApp = (() => {
 
   return {
     init,
+    renderLearningPath,
     renderLessons,
     renderLessonDetail,
     renderQuiz,
