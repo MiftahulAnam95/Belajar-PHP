@@ -21,8 +21,8 @@ window.PhpLabLayout = (() => {
       <nav class="navbar navbar-expand-lg app-navbar sticky-top" aria-label="Navigasi utama">
         <div class="container">
           <a class="navbar-brand" href="${rootPath}index.html" aria-label="Belajar PHP">
-            <img class="brand-logo brand-logo-light" src="${rootPath}assets/images/logo-light.svg" alt="Belajar PHP" />
-            <img class="brand-logo brand-logo-dark" src="${rootPath}assets/images/logo-dark.svg" alt="" />
+            <img class="brand-logo brand-logo-light" src="${rootPath}assets/images/logo-light.png" alt="Belajar PHP" />
+            <img class="brand-logo brand-logo-dark" src="${rootPath}assets/images/logo-dark.png" alt="" />
           </a>
           <div class="d-flex align-items-center gap-2 ms-auto order-lg-3">
             <button
