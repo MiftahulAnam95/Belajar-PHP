@@ -334,6 +334,10 @@ window.PhpLabApp = (() => {
               <strong>Fokus belajarmu</strong>
               <p class="mb-0">${escapeHTML(item.overview)}</p>
             </div>
+            <div class="beginner-overview">
+              <strong>Kalau dijelaskan ke anak SD</strong>
+              <p class="mb-0">${escapeHTML(item.kidGoal)}</p>
+            </div>
           </section>
           <section class="detail-block">
             <h3><i class="bi bi-flag"></i> Tujuan belajar</h3>
@@ -356,6 +360,10 @@ window.PhpLabApp = (() => {
             <ol class="beginner-steps">
               ${item.steps.map((step) => `<li><span>${escapeHTML(step)}</span></li>`).join("")}
             </ol>
+          </section>
+          <section class="detail-block">
+            <h3><i class="bi bi-tools"></i> Bagian project kecil</h3>
+            <div class="practice-box"><p class="mb-0">${escapeHTML(item.tinyProject)}</p></div>
           </section>
           ${renderTutorialSections(item)}
           <section class="detail-block">
@@ -398,6 +406,10 @@ window.PhpLabApp = (() => {
           <section class="detail-block">
             <h3><i class="bi bi-check2-square"></i> Cek sebelum lanjut</h3>
             <div class="checkpoint-box"><p class="mb-0">${escapeHTML(item.checkpoint)}</p></div>
+          </section>
+          <section class="detail-block">
+            <h3><i class="bi bi-cloud-arrow-up"></i> Catatan siap deploy</h3>
+            <div class="deploy-note-box"><p class="mb-0">${escapeHTML(item.deployNote)}</p></div>
           </section>
           <section class="detail-block">
             <h3><i class="bi bi-arrow-repeat"></i> Recall challenge</h3>
@@ -452,7 +464,7 @@ window.PhpLabApp = (() => {
         ${
           nextLesson
             ? `<a class="btn btn-primary" href="${lessonHref(nextLesson.id)}">Lanjut ke Materi Berikutnya <i class="bi bi-arrow-right"></i></a>`
-            : `<a class="btn btn-primary" href="${rootPath}progress.html">Lihat Progress <i class="bi bi-arrow-right"></i></a>`
+            : `<a class="btn btn-primary" href="${rootPath}projects.html">Rakit Mini Project <i class="bi bi-arrow-right"></i></a><a class="btn btn-soft" href="${rootPath}deploy.html"><i class="bi bi-cloud-arrow-up"></i> Checklist Deploy</a>`
         }
       </div>`;
   };
@@ -869,6 +881,15 @@ window.PhpLabApp = (() => {
                 <ol class="ps-3">${project.steps.map((step) => `<li>${escapeHTML(step)}</li>`).join("")}</ol>
                 <p class="mb-1"><strong>Hint:</strong> ${escapeHTML(project.hint)}</p>
                 <p class="mb-0"><strong>Challenge tambahan:</strong> ${escapeHTML(project.extra)}</p>
+                <div class="project-deploy-check">
+                  <strong>Checklist siap deploy:</strong>
+                  <ul>
+                    <li>Berjalan di localhost tanpa error.</li>
+                    <li>Input pengguna divalidasi sebelum diproses.</li>
+                    <li>Output dari pengguna ditampilkan dengan aman.</li>
+                    <li>File konfigurasi dan folder data mudah ditemukan.</li>
+                  </ul>
+                </div>
               </details>
             </article>
           </div>`
@@ -902,7 +923,7 @@ window.PhpLabApp = (() => {
     if (nextRecommendation) {
       nextRecommendation.innerHTML = nextLesson
         ? `<i class="bi bi-compass"></i> Rekomendasi berikutnya: <a href="${lessonHref(nextLesson.id)}"><strong>${escapeHTML(nextLesson.title)}</strong></a>`
-        : '<i class="bi bi-check-circle"></i> Semua materi utama sudah selesai. Lanjutkan mini project untuk memperkuat pemahaman.';
+        : `<i class="bi bi-check-circle"></i> Semua materi utama sudah selesai. Lanjutkan <a href="${rootPath}projects.html"><strong>Mini Project</strong></a>, lalu cek <a href="${rootPath}deploy.html"><strong>Deploy</strong></a>.`;
     }
     if (badgeGrid) {
       badgeGrid.innerHTML = data.badges
