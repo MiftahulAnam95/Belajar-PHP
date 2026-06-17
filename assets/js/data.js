@@ -1,120 +1,11 @@
 window.PhpLabData = (() => {
   const starterPrerequisite =
-    "Cukup tahu HTML dasar: tag membuat isi halaman, CSS membuat tampilan, dan browser menampilkan hasilnya. Kalau belum hafal, tidak apa-apa. Ikuti contoh pelan-pelan.";
+    "Sudah pernah melihat HTML, CSS, dan JavaScript dasar. Tidak perlu mahir, cukup tahu bahwa HTML membentuk konten, CSS mengatur tampilan, dan JavaScript membuat interaksi di browser.";
 
   const defaultTerms = [
-    { term: "Server", meaning: "Tempat PHP bekerja. Bayangkan seperti dapur yang memasak halaman sebelum diberikan ke browser." },
+    { term: "Server", meaning: "Komputer atau program yang memproses request lalu mengirim response ke browser." },
     { term: "Request", meaning: "Permintaan dari browser, misalnya membuka halaman atau mengirim form." },
-    { term: "Response", meaning: "Jawaban dari server, biasanya HTML yang sudah siap ditampilkan browser." }
-  ];
-
-  const learningPath = [
-    {
-      id: "level-1",
-      title: "Level 1: Mengerti alur web",
-      range: "Materi 01-03",
-      icon: "bi-compass",
-      startLesson: "apa-itu-php",
-      goal: "Paham browser meminta halaman, server menjalankan PHP, lalu HTML dikirim kembali.",
-      outcome: "Bisa menjalankan file PHP pertama lewat localhost."
-    },
-    {
-      id: "level-2",
-      title: "Level 2: Membuat halaman pintar",
-      range: "Materi 04-09",
-      icon: "bi-braces",
-      startLesson: "variabel-tipe-data",
-      goal: "Menggunakan variabel, operator, kondisi, array, loop, dan fungsi untuk membuat halaman berubah sesuai data.",
-      outcome: "Bisa membuat daftar atau ringkasan sederhana dari data PHP."
-    },
-    {
-      id: "level-3",
-      title: "Level 3: Menerima input pengguna",
-      range: "Materi 10-13",
-      icon: "bi-ui-checks",
-      startLesson: "form-get-post",
-      goal: "Membaca form, mengecek input, menyusun template, dan mengenal session untuk fitur login atau todo.",
-      outcome: "Bisa membuat form yang memberi feedback dengan aman."
-    },
-    {
-      id: "level-4",
-      title: "Level 4: Menyimpan data",
-      range: "Materi 14-17",
-      icon: "bi-database-check",
-      startLesson: "file-json",
-      goal: "Menyimpan data ke JSON, masuk ke MySQL/PDO, membuat CRUD, dan menangani upload file.",
-      outcome: "Bisa membuat data tidak hilang setelah halaman ditutup."
-    },
-    {
-      id: "level-5",
-      title: "Level 5: Merapikan project",
-      range: "Materi 18-20",
-      icon: "bi-rocket-takeoff",
-      startLesson: "error-debugging",
-      goal: "Membaca error, mengamankan input/output, lalu menggabungkan semua konsep menjadi mini project.",
-      outcome: "Bisa mengecek project kecil sebelum dipindahkan ke hosting."
-    }
-  ];
-
-  const learnerProfiles = [
-    {
-      id: "blank",
-      label: "Benar-benar baru",
-      icon: "bi-seedling",
-      title: "Mulai dari gambaran web dulu",
-      description: "Cocok kalau kamu belum yakin bedanya browser, server, PHP, HTML, dan localhost.",
-      startLesson: "apa-itu-php",
-      focus: ["Pahami alur request-response", "Jalankan PHP lewat localhost", "Ketik contoh pendek tanpa terburu-buru"],
-      cta: "Mulai dari Materi 01"
-    },
-    {
-      id: "html",
-      label: "Sudah kenal HTML/CSS",
-      icon: "bi-window",
-      title: "Langsung hubungkan HTML dengan PHP",
-      description: "Cocok kalau kamu bisa membuat halaman statis, tetapi bingung cara membuatnya berubah sesuai data.",
-      startLesson: "sintaks-echo-komentar",
-      focus: ["Gunakan echo untuk mencetak HTML", "Simpan data di variabel", "Buat kondisi dan daftar"],
-      cta: "Masuk ke Sintaks PHP"
-    },
-    {
-      id: "form",
-      label: "Mau bikin form",
-      icon: "bi-ui-checks-grid",
-      title: "Fokus ke input pengguna",
-      description: "Cocok kalau targetmu membuat kontak, login sederhana, komentar, atau buku tamu.",
-      startLesson: "form-get-post",
-      focus: ["Baca data POST", "Validasi input kosong", "Amankan output dengan htmlspecialchars"],
-      cta: "Mulai jalur Form"
-    }
-  ];
-
-  const learningFlow = [
-    {
-      title: "Lihat dulu",
-      icon: "bi-eye",
-      description: "Baca analogi dan bahasa awam sampai kamu tahu manfaat materinya."
-    },
-    {
-      title: "Ketik ulang",
-      icon: "bi-keyboard",
-      description: "Tulis contoh kode sendiri di localhost agar tangan ikut paham."
-    },
-    {
-      title: "Ubah kecil",
-      icon: "bi-sliders",
-      description: "Ganti satu nama, angka, atau kondisi, lalu perhatikan output berubah."
-    },
-    {
-      title: "Jelaskan ulang",
-      icon: "bi-chat-dots",
-      description: "Tulis recall singkat dengan bahasa sendiri sebelum lanjut."
-    },
-    {
-      title: "Tempel ke project",
-      icon: "bi-box-arrow-in-down",
-      description: "Gabungkan konsepnya ke mini project agar belajar tidak terasa lepas."
-    }
+    { term: "Response", meaning: "Jawaban dari server, biasanya HTML yang akhirnya ditampilkan browser." }
   ];
 
   const lesson = (item) => ({
@@ -122,16 +13,12 @@ window.PhpLabData = (() => {
     duration: "10 menit",
     prerequisite: starterPrerequisite,
     overview: item.goal,
-    kidGoal: item.goal,
-    tinyProject: "Tambahkan bagian kecil ini ke project latihanmu. Tidak perlu besar; satu file yang berjalan dengan benar sudah cukup.",
-    deployNote:
-      "Kebiasaan siap deploy: jalankan lewat localhost, pastikan tidak ada error, rapikan nama file, dan jangan menampilkan data pengguna tanpa pengamanan.",
     steps: [
-      "Baca tujuan kecilnya. Tanyakan: setelah ini aku bisa membuat apa?",
-      "Lihat contoh kode satu bagian saja. Jangan buru-buru ke bawah.",
-      "Ketik ulang di file .php lewat server lokal.",
-      "Ubah satu nilai kecil, jalankan ulang, lalu lihat bagian mana yang berubah.",
-      "Jelaskan ulang dengan bahasa sendiri sebelum menekan selesai."
+      "Baca tujuan dan masalah yang ingin diselesaikan.",
+      "Perhatikan contoh kode PHP satu bagian setiap kali.",
+      "Ketik ulang contoh di file .php, bukan hanya menyalin.",
+      "Ubah satu nilai kecil lalu jalankan ulang halaman.",
+      "Jawab recall dengan bahasa sendiri sebelum lanjut."
     ],
     terms: defaultTerms,
     commonMistakes: [
@@ -139,7 +26,7 @@ window.PhpLabData = (() => {
       "Lupa tanda titik koma, tanda kutip, atau tanda kurung penutup.",
       "Mencampur HTML dan PHP tanpa memahami bagian yang dijalankan server."
     ],
-    checkpoint: "Kamu siap lanjut jika bisa menjelaskan fungsi contoh kode dengan kata-katamu sendiri.",
+    checkpoint: "Kamu siap lanjut jika bisa menjelaskan fungsi contoh kode tanpa membaca ulang penjelasan.",
     filename: "index.php",
     ...item
   });
@@ -216,7 +103,7 @@ php -S localhost:8000`,
     lesson({
       id: "sintaks-echo-komentar",
       title: "Sintaks, echo, dan komentar",
-      icon: "bi-code-slash",
+      icon: "bi-chat-left-code",
       duration: "10 menit",
       goal: "Mengenali aturan dasar penulisan PHP dan cara menampilkan output.",
       problem: "Pemula sering bingung membedakan teks HTML biasa, kode PHP, dan komentar yang tidak dijalankan.",
@@ -864,12 +751,8 @@ echo "Password siap disimpan dengan aman";`,
       title: "Mini project: buku tamu",
       icon: "bi-rocket-takeoff",
       duration: "18 menit",
-      goal: "Merakit konsep variabel, form, validasi, JSON, include, tampilan, dan checklist deploy menjadi project kecil.",
-      kidGoal: "Membuat buku tamu: teman menulis nama dan pesan, PHP menyimpan pesannya, lalu halaman menampilkan daftar pesan dengan aman.",
-      tinyProject: "Bangun folder buku-tamu sampai bisa dibuka di localhost, menerima pesan, menyimpan ke JSON, menampilkan daftar, lalu cek daftar siap deploy.",
-      deployNote:
-        "Sebelum upload ke hosting, pastikan file data bisa ditulis, output memakai htmlspecialchars, tidak ada error detail terbuka, dan folder upload/data tidak berisi file berbahaya.",
-      problem: "Setelah belajar potongan konsep, kamu perlu menyatukannya agar paham alur aplikasi PHP sederhana yang bisa dipindahkan ke hosting.",
+      goal: "Merakit konsep variabel, form, validasi, JSON, include, dan tampilan menjadi project kecil.",
+      problem: "Setelah belajar potongan konsep, kamu perlu menyatukannya agar paham alur aplikasi PHP sederhana.",
       analogy: "Mini project seperti menyusun meja belajar: setiap bagian kecil akhirnya dipakai untuk membuat alat yang benar-benar berguna.",
       explanation: "Buku tamu menerima nama dan pesan, memvalidasi input, menyimpan data ke JSON, lalu menampilkan daftar pesan. Project ini belum butuh database sehingga cocok untuk penutup PHP dasar.",
       code: `<?php
@@ -951,39 +834,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
           ],
           checklist: ["foreach membaca semua pesan", "htmlspecialchars dipakai untuk output pengguna"]
-        },
-        {
-          title: "Cek sebelum deploy",
-          description: "Ini bukan langkah upload penuh, tetapi kebiasaan akhir agar project PHP pertama lebih rapi saat pindah hosting.",
-          steps: [
-            "Jalankan php -S localhost:8000 dan coba kirim beberapa pesan.",
-            "Kosongkan form lalu pastikan data kosong tidak tersimpan.",
-            "Coba isi nama dengan <b>Admin</b> dan pastikan tampil sebagai teks biasa.",
-            "Pastikan data/pesan.json berisi [] atau array JSON yang valid.",
-            "Rapikan folder: index.php, style.css, folder data, dan file README kecil.",
-            "Saat di hosting, matikan display_errors dan simpan catatan lokasi file data."
-          ],
-          files: [
-            {
-              filename: "README-project.txt",
-              note: "Catatan kecil yang ikut di folder project.",
-              code: `Nama project: Buku Tamu PHP
-Cara menjalankan lokal:
-php -S localhost:8000
-
-File penting:
-- index.php: form, proses simpan, dan daftar pesan
-- data/pesan.json: tempat pesan disimpan
-- style.css: tampilan halaman
-
-Checklist deploy:
-- Form sudah divalidasi
-- Output memakai htmlspecialchars
-- Tidak ada error detail untuk pengunjung
-- Folder data bisa ditulis oleh server`
-            }
-          ],
-          checklist: ["Project berjalan di localhost", "Input buruk tidak merusak tampilan", "Ada catatan cara menjalankan project"]
         }
       ],
       exercise: "Tambahkan tanggal pesan dan tombol hapus sederhana berdasarkan index array.",
@@ -1002,205 +852,6 @@ Checklist deploy:
       previewOutput: "Form buku tamu menerima pesan, menyimpannya ke JSON, lalu menampilkan daftar pesan."
     })
   ];
-
-  const lessonEnhancements = {
-    "apa-itu-php": {
-      phase: "Level 1",
-      phaseTitle: "Mengerti alur web",
-      plainTitle: "PHP itu mesin pembuat halaman di server.",
-      outcome: "Kamu bisa menjelaskan kenapa browser menerima HTML, bukan kode PHP mentah.",
-      practiceNow: "Buka contoh, ganti nama, lalu lihat output berubah.",
-      projectThread: "Ini fondasi untuk semua project: PHP menyiapkan isi halaman sebelum pengunjung melihatnya.",
-      tinyProject: "Buat file index.php yang menampilkan sapaan dan nama materi belajar hari ini."
-    },
-    "persiapan-server-lokal": {
-      phase: "Level 1",
-      phaseTitle: "Mengerti alur web",
-      plainTitle: "PHP harus dijalankan lewat server lokal.",
-      outcome: "Kamu bisa membuka http://localhost:8000 dan melihat PHP berjalan.",
-      practiceNow: "Buat folder latihan-php, isi index.php, lalu jalankan php -S localhost:8000.",
-      projectThread: "Setiap project nanti diuji dulu di localhost sebelum upload.",
-      tinyProject: "Siapkan folder latihan utama berisi index.php, assets, dan data kosong."
-    },
-    "sintaks-echo-komentar": {
-      phase: "Level 1",
-      phaseTitle: "Mengerti alur web",
-      plainTitle: "Belajar tanda baca dasar PHP.",
-      outcome: "Kamu bisa menulis echo, komentar, dan titik koma tanpa bingung.",
-      practiceNow: "Tulis tiga echo: judul, kalimat pendek, dan garis pemisah <hr>.",
-      projectThread: "Output echo akan dipakai untuk membuat bagian HTML dari project.",
-      tinyProject: "Tambahkan header sederhana berisi judul project dari PHP."
-    },
-    "variabel-tipe-data": {
-      phase: "Level 2",
-      phaseTitle: "Membuat halaman pintar",
-      plainTitle: "Variabel adalah tempat menaruh data sementara.",
-      outcome: "Kamu bisa menyimpan nama, angka, dan status lalu menampilkannya.",
-      practiceNow: "Buat variabel nama, target, dan jamBelajar, lalu gabungkan jadi satu kalimat.",
-      projectThread: "Data produk, pesan, user, dan status login nanti selalu dimulai dari variabel.",
-      tinyProject: "Buat kartu profil belajar dari beberapa variabel."
-    },
-    "string-operator": {
-      phase: "Level 2",
-      phaseTitle: "Membuat halaman pintar",
-      plainTitle: "Operator membantu menghitung dan menyambung teks.",
-      outcome: "Kamu bisa membuat total harga dan kalimat dinamis.",
-      practiceNow: "Hitung subtotal dari harga dan jumlah, lalu tampilkan dengan label Rupiah.",
-      projectThread: "Perhitungan ini akan dipakai pada katalog, invoice, dan dashboard kecil.",
-      tinyProject: "Buat ringkasan belanja dari dua barang sederhana."
-    },
-    "kondisi-if-else": {
-      phase: "Level 2",
-      phaseTitle: "Membuat halaman pintar",
-      plainTitle: "if else membuat halaman bisa mengambil keputusan.",
-      outcome: "Kamu bisa menampilkan pesan berbeda berdasarkan nilai atau status.",
-      practiceNow: "Buat status stok: tersedia jika stok di atas 0, habis jika tidak.",
-      projectThread: "Kondisi dipakai untuk validasi, login, stok produk, dan pesan sukses/error.",
-      tinyProject: "Tambahkan label status pada kartu produk."
-    },
-    "array-dasar": {
-      phase: "Level 2",
-      phaseTitle: "Membuat halaman pintar",
-      plainTitle: "Array menyimpan banyak data dalam satu nama.",
-      outcome: "Kamu bisa menyimpan daftar materi, produk, atau menu dalam satu variabel.",
-      practiceNow: "Buat array tiga produk dan tampilkan produk pertama serta terakhir.",
-      projectThread: "Array adalah bentuk kecil dari data yang nanti datang dari JSON atau database.",
-      tinyProject: "Buat daftar target belajar dari array."
-    },
-    "perulangan-foreach": {
-      phase: "Level 2",
-      phaseTitle: "Membuat halaman pintar",
-      plainTitle: "foreach menampilkan isi array satu per satu.",
-      outcome: "Kamu bisa membuat list HTML dari data tanpa echo berulang.",
-      practiceNow: "Loop array hobi atau produk menjadi <li> di dalam <ul>.",
-      projectThread: "Setiap daftar data di project akan ditampilkan dengan pola foreach.",
-      tinyProject: "Tampilkan daftar produk mini memakai foreach."
-    },
-    "fungsi-dasar": {
-      phase: "Level 2",
-      phaseTitle: "Membuat halaman pintar",
-      plainTitle: "Fungsi membuat kode yang sering dipakai menjadi rapi.",
-      outcome: "Kamu bisa membuat helper kecil seperti formatRupiah atau sapa.",
-      practiceNow: "Buat fungsi sapa($nama), lalu echo hasilnya dua kali dengan nama berbeda.",
-      projectThread: "Fungsi menjaga project tidak penuh kode ulang yang sulit dirawat.",
-      tinyProject: "Tambahkan fungsi formatRupiah untuk kartu produk."
-    },
-    "form-get-post": {
-      phase: "Level 3",
-      phaseTitle: "Menerima input pengguna",
-      plainTitle: "Form membuat halaman bisa menerima jawaban dari pengguna.",
-      outcome: "Kamu bisa membaca input dari form POST dan menampilkannya.",
-      practiceNow: "Buat form nama dan kota, lalu tampilkan kalimat perkenalan.",
-      projectThread: "Form adalah pintu masuk untuk kontak, komentar, login, pencarian, dan CRUD.",
-      tinyProject: "Buat form kontak satu halaman dengan field nama dan pesan."
-    },
-    "validasi-input": {
-      phase: "Level 3",
-      phaseTitle: "Menerima input pengguna",
-      plainTitle: "Validasi mengecek data sebelum dipakai.",
-      outcome: "Kamu bisa menolak input kosong dan menampilkan output dengan aman.",
-      practiceNow: "Cek nama kosong, lalu tampilkan error sederhana jika belum diisi.",
-      projectThread: "Semua project yang menerima input harus punya validasi dan escape output.",
-      tinyProject: "Tambahkan validasi nama dan pesan pada form kontak."
-    },
-    "include-template": {
-      phase: "Level 3",
-      phaseTitle: "Menerima input pengguna",
-      plainTitle: "include memecah halaman agar tidak menulis ulang bagian yang sama.",
-      outcome: "Kamu bisa membuat header dan footer reusable.",
-      practiceNow: "Pisahkan header.php dan footer.php, lalu include dari index.php.",
-      projectThread: "Template membuat project kecil terasa rapi seperti aplikasi sungguhan.",
-      tinyProject: "Buat partial header, nav, dan footer untuk halaman latihan."
-    },
-    "session-cookie": {
-      phase: "Level 3",
-      phaseTitle: "Menerima input pengguna",
-      plainTitle: "Session menyimpan keadaan pengguna selama memakai website.",
-      outcome: "Kamu bisa menyimpan status sementara seperti login atau todo.",
-      practiceNow: "Simpan nama pengguna ke session lalu tampilkan di halaman berikutnya.",
-      projectThread: "Session dipakai untuk login, flash message, dan data sementara.",
-      tinyProject: "Buat flash message Berhasil disimpan memakai session."
-    },
-    "file-json": {
-      phase: "Level 4",
-      phaseTitle: "Menyimpan data",
-      plainTitle: "JSON adalah penyimpanan ringan untuk latihan data.",
-      outcome: "Kamu bisa membaca, menambah, dan menyimpan array ke file JSON.",
-      practiceNow: "Buat data/tugas.json berisi [], lalu tambahkan satu tugas dari PHP.",
-      projectThread: "JSON cocok untuk memahami alur simpan data sebelum masuk database.",
-      tinyProject: "Simpan pesan form kontak ke file JSON."
-    },
-    "dasar-mysql-pdo": {
-      phase: "Level 4",
-      phaseTitle: "Menyimpan data",
-      plainTitle: "PDO adalah jembatan aman antara PHP dan MySQL.",
-      outcome: "Kamu bisa membuat koneksi database dan menjalankan query dengan prepare.",
-      practiceNow: "Buat database belajar_php dan coba SELECT sederhana dengan PDO.",
-      projectThread: "Database membuat project bisa menyimpan banyak data dengan lebih serius.",
-      tinyProject: "Buat koneksi database.php yang dipakai oleh halaman catatan."
-    },
-    "crud-sederhana": {
-      phase: "Level 4",
-      phaseTitle: "Menyimpan data",
-      plainTitle: "CRUD adalah pola tambah, lihat, edit, dan hapus data.",
-      outcome: "Kamu paham urutan kerja fitur data paling umum di website.",
-      practiceNow: "Mulai dari Create dan Read sebelum menambah Edit dan Delete.",
-      projectThread: "CRUD adalah inti admin produk, catatan, user, artikel, dan banyak aplikasi.",
-      tinyProject: "Buat CRUD catatan kecil dengan judul dan isi."
-    },
-    "upload-file": {
-      phase: "Level 4",
-      phaseTitle: "Menyimpan data",
-      plainTitle: "Upload file butuh form dan pengecekan khusus.",
-      outcome: "Kamu bisa menerima file, mengecek tipe/ukuran, lalu menyimpannya.",
-      practiceNow: "Upload satu gambar kecil dan tampilkan pesan berhasil.",
-      projectThread: "Upload dipakai untuk foto profil, bukti pembayaran, dan lampiran pesan.",
-      tinyProject: "Tambahkan upload avatar sederhana pada form profil."
-    },
-    "error-debugging": {
-      phase: "Level 5",
-      phaseTitle: "Merapikan project",
-      plainTitle: "Error adalah petunjuk, bukan tanda gagal belajar.",
-      outcome: "Kamu bisa membaca jenis error, baris masalah, dan langkah memperbaikinya.",
-      practiceNow: "Sengaja hapus titik koma, baca error, lalu perbaiki.",
-      projectThread: "Kemampuan debugging membuat kamu tidak berhenti saat project mulai besar.",
-      tinyProject: "Buat daftar error yang pernah muncul dan solusinya."
-    },
-    "keamanan-dasar": {
-      phase: "Level 5",
-      phaseTitle: "Merapikan project",
-      plainTitle: "Keamanan dasar dimulai dari input, output, dan query.",
-      outcome: "Kamu tahu kapan memakai htmlspecialchars, validasi, dan prepared statement.",
-      practiceNow: "Coba input <b>Nama</b>, lalu bandingkan echo mentah dan htmlspecialchars.",
-      projectThread: "Project yang akan dipakai orang lain harus aman sejak latihan pertama.",
-      tinyProject: "Audit form kontak: validasi input, escape output, dan cek query."
-    },
-    "mini-project-php": {
-      phase: "Level 5",
-      phaseTitle: "Merapikan project",
-      plainTitle: "Semua konsep digabung menjadi buku tamu kecil.",
-      outcome: "Kamu bisa membangun form, validasi, simpan JSON, tampilkan daftar, dan redirect.",
-      practiceNow: "Ikuti tutorial dari folder kosong sampai buku tamu berjalan.",
-      projectThread: "Ini latihan lengkap sebelum membuat project pribadi yang lebih besar.",
-      tinyProject: "Rakit buku tamu sampai data tersimpan dan tampil kembali dengan aman."
-    }
-  };
-
-  lessons.forEach((item) => {
-    const enhancement = lessonEnhancements[item.id];
-    if (!enhancement) return;
-    Object.assign(item, enhancement);
-    item.overview = enhancement.plainTitle;
-    item.kidGoal = enhancement.outcome;
-    item.checkpoint = `Kamu siap lanjut jika: ${enhancement.outcome}`;
-    item.steps = [
-      "Baca bagian 'bahasa awam' sampai kamu tahu manfaat materi ini.",
-      "Ketik contoh kode pendek di localhost, jangan hanya membaca.",
-      "Ubah satu nilai kecil agar hubungan kode dan hasil terlihat.",
-      enhancement.practiceNow,
-      "Tulis ulang kesimpulan satu kalimat sebelum menekan selesai."
-    ];
-  });
 
   const quizQuestions = [
     {
@@ -1529,7 +1180,7 @@ exit;`
     {
       title: "Form kontak PHP",
       level: "Pemula",
-      goal: "Membuat form kontak yang memvalidasi nama, email, pesan, menampilkan feedback, dan siap dipasang di website kecil.",
+      goal: "Membuat form kontak dengan validasi nama, email, pesan, dan output aman.",
       example: {
         type: "form",
         title: "Kontak mentor",
@@ -1537,14 +1188,14 @@ exit;`
         button: "Kirim pesan"
       },
       features: ["POST", "validasi", "htmlspecialchars", "pesan error", "redirect"],
-      steps: ["Buat form HTML", "Baca $_POST", "Validasi field kosong", "Escape output", "Tampilkan feedback", "Cek ulang sebelum deploy"],
+      steps: ["Buat form HTML", "Baca $_POST", "Validasi field kosong", "Escape output", "Tampilkan feedback"],
       hint: "Mulai dari validasi nama sebelum menambah email dan pesan.",
       extra: "Simpan pesan ke file JSON."
     },
     {
       title: "Buku tamu JSON",
       level: "Pemula +",
-      goal: "Menerima pesan pengunjung, menyimpannya ke JSON, menampilkan daftar pesan, dan mengecek file data sebelum deploy.",
+      goal: "Menerima pesan pengunjung, menyimpannya ke JSON, dan menampilkan daftar pesan.",
       example: {
         type: "article",
         brand: "BukuTamu",
@@ -1554,14 +1205,14 @@ exit;`
         related: "JSON + foreach"
       },
       features: ["file JSON", "json_decode", "json_encode", "foreach", "escape output"],
-      steps: ["Buat data/pesan.json", "Buat form POST", "Validasi input", "Simpan array baru", "Render daftar", "Pastikan file JSON valid"],
+      steps: ["Buat data/pesan.json", "Buat form POST", "Validasi input", "Simpan array baru", "Render daftar"],
       hint: "Pastikan file JSON pertama berisi [] agar mudah dibaca.",
       extra: "Tambahkan tanggal otomatis."
     },
     {
       title: "Katalog produk array",
       level: "Pemula",
-      goal: "Menampilkan produk dari array PHP ke card HTML yang rapi dan mudah dikembangkan menjadi katalog sederhana.",
+      goal: "Menampilkan produk dari array PHP ke card HTML.",
       example: {
         type: "gallery",
         title: "Katalog PHP",
@@ -1574,14 +1225,14 @@ exit;`
         ]
       },
       features: ["array associative", "foreach", "format harga", "card HTML", "CSS grid"],
-      steps: ["Buat array produk", "Loop dengan foreach", "Tampilkan nama dan harga", "Tambahkan CSS card", "Cek tampilan mobile"],
+      steps: ["Buat array produk", "Loop dengan foreach", "Tampilkan nama dan harga", "Tambahkan CSS card"],
       hint: "Gunakan number_format untuk harga.",
       extra: "Tambahkan filter kategori sederhana dari $_GET."
     },
     {
       title: "Todo session",
       level: "Pemula +",
-      goal: "Membuat todo sederhana yang tersimpan selama session browser aktif dan aman dari input kosong.",
+      goal: "Membuat todo sederhana yang tersimpan selama session browser aktif.",
       example: {
         type: "checklist",
         title: "Todo belajar",
@@ -1590,14 +1241,14 @@ exit;`
         cta: "Tambah tugas"
       },
       features: ["session_start", "$_SESSION", "POST", "array", "hapus item"],
-      steps: ["Mulai session", "Simpan todo di $_SESSION", "Tambah dari form", "Render dengan foreach", "Buat tombol hapus", "Cek session_start di baris atas"],
+      steps: ["Mulai session", "Simpan todo di $_SESSION", "Tambah dari form", "Render dengan foreach", "Buat tombol hapus"],
       hint: "Inisialisasi $_SESSION['todos'] dengan array kosong jika belum ada.",
       extra: "Tambahkan status selesai."
     },
     {
       title: "CRUD catatan MySQL",
       level: "Menengah awal",
-      goal: "Membuat tambah, lihat, edit, dan hapus catatan memakai PDO dengan query yang siap dipakai di hosting.",
+      goal: "Membuat tambah, lihat, edit, dan hapus catatan memakai PDO.",
       example: {
         type: "dashboard",
         title: "Catatan PHP",
@@ -1611,14 +1262,14 @@ exit;`
         tasks: ["Koneksi PDO", "Prepared statement", "Redirect"]
       },
       features: ["PDO", "prepared statement", "INSERT", "UPDATE", "DELETE", "redirect"],
-      steps: ["Buat tabel catatan", "Buat koneksi PDO", "Tampilkan data", "Buat proses tambah", "Tambah edit dan hapus", "Pisahkan config database"],
+      steps: ["Buat tabel catatan", "Buat koneksi PDO", "Tampilkan data", "Buat proses tambah", "Tambah edit dan hapus"],
       hint: "Selesaikan Read dan Create sebelum masuk Update dan Delete.",
       extra: "Tambahkan pencarian judul."
     },
     {
       title: "Dashboard progress belajar",
       level: "Menengah awal",
-      goal: "Membaca data JSON lalu menampilkan ringkasan progress belajar yang rapi sebagai dashboard kecil.",
+      goal: "Membaca data JSON lalu menampilkan ringkasan progress belajar.",
       example: {
         type: "dashboard",
         title: "Progress PHP",
@@ -1632,7 +1283,7 @@ exit;`
         tasks: ["Baca JSON", "Hitung persen", "Render kartu"]
       },
       features: ["JSON", "fungsi", "foreach", "perhitungan", "komponen HTML"],
-      steps: ["Siapkan data progress", "Buat fungsi hitung persen", "Render stat card", "Warnai progress bar", "Cek data kosong"],
+      steps: ["Siapkan data progress", "Buat fungsi hitung persen", "Render stat card", "Warnai progress bar"],
       hint: "Pisahkan fungsi hitungProgress agar mudah diuji.",
       extra: "Tambahkan badge berdasarkan persentase."
     }
@@ -1646,6 +1297,140 @@ exit;`
     { id: "data-handler", title: "Data Handler", icon: "bi-database-check", check: (state) => ["file-json", "dasar-mysql-pdo", "crud-sederhana"].every((id) => state.completedLessons.includes(id)) },
     { id: "project-maker", title: "Project Maker", icon: "bi-rocket-takeoff-fill", check: (state) => state.completedLessons.includes("mini-project-php") },
     { id: "php-debugger", title: "PHP Debugger", icon: "bi-bug-fill", check: (state) => state.completedDebug.length >= 5 }
+  ];
+
+  const learningPhases = [
+    {
+      id: "alur-server",
+      icon: "bi-hdd-network",
+      label: "Materi 01-04",
+      title: "Kenali Alur PHP",
+      description: "Pahami PHP sebagai bahasa server-side, jalankan server lokal, lalu mulai dari echo, komentar, variabel, dan tipe data.",
+      outcome: "Kamu tahu kenapa file PHP harus dibuka lewat localhost dan bagaimana server mengirim output ke browser.",
+      lessonStart: 0,
+      lessonEnd: 3
+    },
+    {
+      id: "logika-data",
+      icon: "bi-diagram-3",
+      label: "Materi 05-09",
+      title: "Logika dan Data Dasar",
+      description: "Latih string, operator, kondisi, array, foreach, dan fungsi agar kode PHP tidak hanya mencetak teks statis.",
+      outcome: "Kamu bisa membuat keputusan, membaca daftar data, dan membungkus logika sederhana dalam fungsi.",
+      lessonStart: 4,
+      lessonEnd: 8
+    },
+    {
+      id: "form-penyimpanan",
+      icon: "bi-ui-checks",
+      label: "Materi 10-15",
+      title: "Form, Validasi, dan Penyimpanan",
+      description: "Belajar GET/POST, validasi input, include template, session/cookie, file JSON, dan dasar MySQL dengan PDO.",
+      outcome: "Kamu bisa menerima input pengguna, menjaga output tetap aman, dan mulai menyimpan data.",
+      lessonStart: 9,
+      lessonEnd: 14
+    },
+    {
+      id: "crud-project",
+      icon: "bi-rocket-takeoff",
+      label: "Materi 16-20",
+      title: "CRUD, Keamanan, dan Project",
+      description: "Bangun CRUD sederhana, pahami keamanan dasar, upload file, debugging error PHP, dan mini project buku tamu.",
+      outcome: "Kamu siap merakit project PHP dasar yang punya form, data, validasi, dan alur debugging.",
+      lessonStart: 15,
+      lessonEnd: 19
+    }
+  ];
+
+  const starterFlow = [
+    {
+      icon: "bi-browser-chrome",
+      title: "Browser meminta halaman",
+      description: "Ingat bahwa pengguna membuka URL seperti localhost, bukan langsung menjalankan kode PHP di browser."
+    },
+    {
+      icon: "bi-hdd-network",
+      title: "Server menjalankan PHP",
+      description: "Kode PHP diproses di server lokal. Browser hanya menerima hasil akhirnya."
+    },
+    {
+      icon: "bi-code-square",
+      title: "PHP membuat output",
+      description: "Gunakan echo, kondisi, foreach, dan data untuk menghasilkan HTML atau teks."
+    },
+    {
+      icon: "bi-bug",
+      title: "Debug satu error",
+      description: "Baca error pertama, cek barisnya, lalu perbaiki tanda baca, nama variabel, atau path file."
+    }
+  ];
+
+  const homeDemos = [
+    {
+      id: "echo",
+      label: "Echo",
+      title: "PHP mencetak output ke browser",
+      filename: "index.php",
+      code: `<?php
+$nama = "Rina";
+
+echo "<h1>Halo, " . $nama . "</h1>";
+echo "<p>Selamat belajar PHP dasar.</p>";`,
+      output: "Halo, Rina\nSelamat belajar PHP dasar.",
+      explanation: "echo mengirim teks atau HTML sebagai output. Browser menerima hasil akhirnya, bukan kode PHP asli.",
+      task: "Ganti nilai $nama dengan namamu sendiri, lalu perhatikan output yang berubah."
+    },
+    {
+      id: "kondisi",
+      label: "Kondisi",
+      title: "PHP memilih output berdasarkan syarat",
+      filename: "status.php",
+      code: `<?php
+$nilai = 82;
+
+if ($nilai >= 75) {
+    echo "Lulus";
+} else {
+    echo "Belum lulus";
+}`,
+      output: "Lulus",
+      explanation: "if mengecek syarat. Jika nilai memenuhi batas, PHP mengirim output pertama. Jika tidak, blok else yang dikirim.",
+      task: "Ubah $nilai menjadi 60, lalu prediksi outputnya sebelum melihat hasil."
+    },
+    {
+      id: "foreach",
+      label: "Foreach",
+      title: "PHP menampilkan daftar dari array",
+      filename: "materi.php",
+      code: `<?php
+$materi = ["Variabel", "Kondisi", "Array"];
+
+echo "<ul>";
+foreach ($materi as $item) {
+    echo "<li>" . $item . "</li>";
+}
+echo "</ul>";`,
+      output: "- Variabel\n- Kondisi\n- Array",
+      explanation: "foreach mengambil item array satu per satu. Ini jauh lebih rapi daripada menulis echo berulang-ulang.",
+      task: "Tambahkan item Form ke array, lalu bayangkan satu baris list baru muncul."
+    },
+    {
+      id: "form",
+      label: "Form",
+      title: "PHP membaca data dari form",
+      filename: "kontak.php",
+      code: `<?php
+$nama = trim($_POST["nama"] ?? "");
+
+if ($nama === "") {
+    echo "Nama wajib diisi";
+} else {
+    echo "Halo, " . htmlspecialchars($nama);
+}`,
+      output: "Jika nama kosong: Nama wajib diisi\nJika nama Nadia: Halo, Nadia",
+      explanation: "$_POST membaca data dari form method POST. htmlspecialchars menjaga output pengguna tetap aman saat ditampilkan.",
+      task: "Tambahkan validasi email setelah nama wajib diisi."
+    }
   ];
 
   const editorDefaults = {
@@ -1700,15 +1485,15 @@ $progress = 45;
   };
 
   return {
-    learningPath,
-    learnerProfiles,
-    learningFlow,
     lessons,
     quizQuestions,
     recallChallenges,
     debugChallenges,
     projects,
     badges,
+    learningPhases,
+    starterFlow,
+    homeDemos,
     editorDefaults
   };
 })();

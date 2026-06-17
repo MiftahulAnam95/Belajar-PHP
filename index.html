@@ -1,126 +1,107 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="PHP Beginner Lab adalah website belajar PHP interaktif dengan bahasa sederhana, latihan kecil, mini project, dan checklist siap deploy." />
-    <title>PHP Beginner Lab | Belajar PHP Sampai Siap Deploy</title>
+    <meta name="description" content="PHP Beginner Lab adalah website belajar PHP interaktif untuk pemula yang melanjutkan dari HTML, CSS, dan JavaScript dasar." />
+    <title>PHP Beginner Lab</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link rel="icon" href="assets/images/favicon.png" type="image/svg+xml" />
+    <link rel="icon" href="assets/images/favicon.png" type="image/png" />
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
   <body data-page="home">
     <div id="appNav"></div>
 
     <main>
-      <section class="hero-section" id="home">
+      <section class="home-learning-hero" id="home">
         <div class="container">
-          <div class="row align-items-center g-4 g-lg-5">
-            <div class="col-lg-6">
-              <span class="eyebrow"><i class="bi bi-stars"></i> Dari nol sampai project siap deploy</span>
-              <h1>Belajar PHP Pelan, Jelas, dan Langsung Jadi Project</h1>
-              <p class="hero-copy">Materi dibuat seperti kelas kecil: pahami dulu idenya, ketik contoh pendek, ubah sedikit, lalu gabungkan menjadi project PHP yang rapi, aman, dan siap dipindahkan ke hosting.</p>
-              <div class="d-flex flex-wrap gap-3">
-                <a class="btn btn-primary btn-lg" href="materi.html">
-                  Mulai Belajar <i class="bi bi-arrow-right"></i>
+          <div class="home-hero-grid">
+            <div class="home-hero-copy">
+              <span class="eyebrow"><i class="bi bi-compass"></i> Jalur belajar PHP untuk pemula</span>
+              <h1>Belajar PHP dari nol dengan memahami alur request sampai output</h1>
+              <p class="hero-copy">Mulai dari server lokal, sintaks, variabel, kondisi, array, form, validasi, include, session, JSON, database, CRUD, upload, sampai mini project PHP.</p>
+              <div class="home-hero-actions">
+                <a class="btn btn-primary btn-lg" id="homeContinueLink" href="materi/apa-itu-php.html">
+                  Mulai sesi sekarang <i class="bi bi-arrow-right"></i>
                 </a>
-                <a class="btn btn-soft btn-lg" href="editor.html">
-                  <i class="bi bi-code-slash"></i> Coba Editor
+                <a class="btn btn-soft btn-lg" href="#demo-interaktif">
+                  <i class="bi bi-play-circle"></i> Lihat demo dulu
                 </a>
-              </div>
-              <div class="hero-stats">
-                <span><strong>20</strong> materi bertahap</span>
-                <span><strong>6</strong> mini project</span>
-                <span><strong>Deploy</strong> checklist akhir</span>
               </div>
             </div>
-            <div class="col-lg-6">
-              <div class="hero-visual">
-                <img src="assets/images/php-lab-hero.svg" alt="Ilustrasi workspace belajar PHP dengan server lokal, form, database, dan output HTML" />
+
+            <aside class="home-session-panel" aria-label="Sesi belajar berikutnya">
+              <div class="session-visual">
+                <img src="assets/images/php-lab-hero.png" alt="Ilustrasi workspace belajar PHP dengan server lokal, form, database, dan output HTML" />
               </div>
-            </div>
+              <article class="session-card">
+                <span class="mini-label">Sesi berikutnya</span>
+                <h2 id="homeNextLessonTitle">Apa itu PHP?</h2>
+                <p id="homeNextLessonMeta">Kenali Alur PHP - 8 menit</p>
+                <div class="session-progress-row">
+                  <span>Progress</span>
+                  <strong id="homeProgressPercent">0%</strong>
+                </div>
+                <div class="session-progress" aria-label="Progress belajar">
+                  <span id="homeProgressBar"></span>
+                </div>
+                <div class="session-stats">
+                  <span><strong id="homeCompletedCount">0/20</strong> materi selesai</span>
+                  <span><strong id="homeCurrentPhase">Kenali Alur PHP</strong> fase aktif</span>
+                </div>
+              </article>
+            </aside>
           </div>
         </div>
       </section>
 
       <section class="section-block compact-section">
         <div class="container">
-          <div class="section-heading heading-row">
-            <div>
-              <span class="eyebrow">Mulai dari mana?</span>
-              <h2>Pilih kondisi kamu sekarang</h2>
-              <p>Setiap orang masuk dari titik yang berbeda. Pilih jalur yang paling mirip dengan keadaanmu agar belajar tidak terasa menebak-nebak.</p>
-            </div>
-            <a class="btn btn-soft" href="progress.html"><i class="bi bi-compass"></i> Lihat rekomendasi</a>
+          <div class="section-heading centered-heading">
+            <span class="eyebrow">Cara belajar</span>
+            <h2>Pahami alurnya dulu, baru hafalkan syntax seperlunya</h2>
+            <p>PHP lebih mudah dipelajari saat kamu melihat hubungan browser, server lokal, file PHP, data input, dan output HTML.</p>
           </div>
-          <div class="learner-profile-grid" id="learnerProfileGrid"></div>
+          <div class="starter-flow" id="starterFlow"></div>
         </div>
       </section>
 
-      <section class="section-block compact-section">
+      <section class="section-block alt-section" id="demo-interaktif">
         <div class="container">
           <div class="section-heading centered-heading">
-            <span class="eyebrow">Kenapa belajar di sini?</span>
-            <h2>PHP terasa ringan saat tujuannya terlihat dari awal</h2>
+            <span class="eyebrow">Demo interaktif</span>
+            <h2>PHP berjalan di server, lalu browser menerima hasil akhirnya</h2>
+            <p>Pilih contoh, lihat kode PHP di kiri, lalu lihat output yang akan diterima browser di preview.</p>
           </div>
-          <div class="row g-3 g-lg-4">
-            <div class="col-md-4">
-              <article class="feature-card h-100">
-                <span class="feature-icon orange"><i class="bi bi-braces"></i></span>
-                <h3>Bahasa sangat sederhana</h3>
-                <p>Setiap konsep dijelaskan seperti percakapan kelas: apa gunanya, kapan dipakai, dan bagian mana yang harus diketik.</p>
-              </article>
-            </div>
-            <div class="col-md-4">
-              <article class="feature-card h-100">
-                <span class="feature-icon cyan"><i class="bi bi-lightning-charge"></i></span>
-                <h3>Latihan kecil dulu</h3>
-                <p>Siswa belajar dari contoh pendek, mengubah satu nilai, menjawab recall, lalu membaca error yang sering muncul.</p>
-              </article>
-            </div>
-            <div class="col-md-4">
-              <article class="feature-card h-100">
-                <span class="feature-icon violet"><i class="bi bi-graph-up-arrow"></i></span>
-                <h3>Akhirnya jadi project</h3>
-                <p>Setelah dasar kuat, konsep disatukan menjadi form, JSON, CRUD, upload, dashboard, dan checklist siap deploy.</p>
-              </article>
+          <div class="home-demo-shell">
+            <div class="demo-tabs" id="homeDemoTabs"></div>
+            <div class="demo-workbench">
+              <div id="homeDemoCode"></div>
+              <div class="demo-preview-panel">
+                <div class="preview-head">
+                  <span><i class="bi bi-browser-chrome"></i> Preview output</span>
+                </div>
+                <iframe id="homeDemoPreview" title="Preview demo PHP"></iframe>
+                <div class="demo-explain" id="homeDemoExplain"></div>
+                <div class="demo-task" id="homeDemoTask"></div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section class="section-block alt-section">
-        <div class="container">
-          <div class="section-heading centered-heading">
-            <span class="eyebrow">Ritme belajar</span>
-            <h2>Satu materi dipelajari dengan pola yang sama</h2>
-            <p>Pemula lebih mudah paham saat aktivitasnya konsisten: lihat konsep, ketik, ubah, jelaskan ulang, lalu hubungkan ke project.</p>
-          </div>
-          <div class="learning-flow-grid" id="learningFlowGrid"></div>
         </div>
       </section>
 
       <section class="section-block">
         <div class="container">
           <div class="section-heading centered-heading">
-            <span class="eyebrow">Pilih ruang belajar</span>
-            <h2>Semua ruang dibuat saling menyambung</h2>
-            <p>Mulai dari materi, coba latihan, pecahkan bug, lalu rakit mini project. Tidak perlu loncat jauh; satu langkah kecil sudah cukup.</p>
+            <span class="eyebrow">Peta belajar</span>
+            <h2>Belajar PHP dibagi menjadi 4 fase yang jelas</h2>
+            <p>Mulai dari alur server, naik ke logika dasar, form dan penyimpanan, lalu database, keamanan, upload, dan mini project.</p>
           </div>
-          <div class="home-path-grid">
-            <a class="path-card" href="materi.html"><i class="bi bi-journal-code"></i><strong>Materi</strong><span>20 pelajaran bertahap</span></a>
-            <a class="path-card" href="quiz.html"><i class="bi bi-patch-question"></i><strong>Quiz</strong><span>Uji pemahaman dasar</span></a>
-            <a class="path-card" href="debugging.html"><i class="bi bi-bug"></i><strong>Debugging</strong><span>Belajar membaca bug PHP</span></a>
-            <a class="path-card" href="recall.html"><i class="bi bi-arrow-repeat"></i><strong>Recall</strong><span>Latih ingatan konsep</span></a>
-            <a class="path-card" href="editor.html"><i class="bi bi-code-square"></i><strong>Editor</strong><span>Simulasikan PHP ke HTML</span></a>
-            <a class="path-card" href="projects.html"><i class="bi bi-rocket-takeoff"></i><strong>Mini Project</strong><span>Rakit project PHP dasar</span></a>
-            <a class="path-card" href="deploy.html"><i class="bi bi-cloud-arrow-up"></i><strong>Deploy</strong><span>Cek sebelum upload</span></a>
-            <a class="path-card" href="progress.html"><i class="bi bi-graph-up-arrow"></i><strong>Progress</strong><span>Lihat perjalanan belajarmu</span></a>
-          </div>
+          <div class="phase-map" id="homePhaseMap"></div>
         </div>
       </section>
     </main>
@@ -135,3 +116,4 @@
     <script src="assets/js/app.js"></script>
   </body>
 </html>
+

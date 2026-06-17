@@ -1,4 +1,4 @@
-window.PhpLabLayout = (() => {
+﻿window.PhpLabLayout = (() => {
   const pages = [
     { id: "home", label: "Home", href: "index.html" },
     { id: "materi", label: "Materi", href: "materi.html" },
@@ -7,7 +7,6 @@ window.PhpLabLayout = (() => {
     { id: "editor", label: "Editor", href: "editor.html" },
     { id: "quiz", label: "Quiz", href: "quiz.html" },
     { id: "projects", label: "Project", href: "projects.html" },
-    { id: "deploy", label: "Deploy", href: "deploy.html" },
     { id: "progress", label: "Progress", href: "progress.html" }
   ];
 
@@ -71,14 +70,13 @@ window.PhpLabLayout = (() => {
   const renderFooter = () => {
     const target = document.getElementById("appFooter");
     if (!target) return;
-    const rootPath = document.body.dataset.root || "";
 
     target.innerHTML = `
       <footer class="site-footer">
         <div class="container">
           <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
-            <span><strong>PHP Beginner Lab</strong> &middot; Belajar PHP dengan bahasa sederhana sampai project siap deploy.</span>
-            <a href="${rootPath}index.html">Kembali ke home</a>
+            <span>PHP Beginner Lab - project belajar PHP interaktif setelah HTML, CSS, dan JavaScript.</span>
+            <span>Dibuat untuk membantu pemula memahami PHP langkah demi langkah.</span>
           </div>
         </div>
       </footer>`;
@@ -110,3 +108,4 @@ window.PhpLabLayout = (() => {
 
   return { init };
 })();
+
