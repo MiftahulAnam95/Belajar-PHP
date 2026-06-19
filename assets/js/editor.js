@@ -1,5 +1,6 @@
 window.PhpLabEditor = (() => {
   const data = window.PhpLabData;
+  const debugAttemptStorageKey = "php-beginner-lab-debug-attempts-v1";
   let elements = {};
 
   const escapeHTML = (value = "") =>
@@ -9,6 +10,39 @@ window.PhpLabEditor = (() => {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+
+  const loadStoredMap = (key) => {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || "{}");
+      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    } catch (error) {
+      return {};
+    }
+  };
+
+  const getActiveDebugChallenge = () => {
+    const debugId = new URLSearchParams(window.location.search).get("debug");
+    return data.debugChallenges.find((challenge) => challenge.id === debugId);
+  };
+
+  const getDebugEditorTarget = (code = "") => {
+    const source = code.trim();
+    if (/^<|<form|<\?=|<\?php\s+(if|foreach)|<\/[a-z]/i.test(source)) return "template";
+    if (/^\$[A-Za-z_]\w*\s*=/.test(source) && !/echo|include|header|session_start|json_decode|\$_|\$pdo/i.test(source)) return "data";
+    if (/body\s*\{|\.|#/.test(source) && !source.includes("<?php")) return "css";
+    return "index";
+  };
+
+  const saveDebugDraft = (challenge, code) => {
+    if (!challenge) return;
+    const attempts = loadStoredMap(debugAttemptStorageKey);
+    attempts[challenge.id] = {
+      ...(attempts[challenge.id] || {}),
+      code,
+      updatedAt: new Date().toISOString()
+    };
+    localStorage.setItem(debugAttemptStorageKey, JSON.stringify(attempts));
+  };
 
   const unquote = (value) => value.trim().slice(1, -1).replace(/\\(["'\\])/g, "$1");
 
@@ -252,12 +286,18 @@ window.PhpLabEditor = (() => {
     .join("\n\n");
 
   const resetEditor = () => {
-    elements.index.value = data.editorDefaults.index;
-    elements.data.value = data.editorDefaults.data;
-    elements.template.value = data.editorDefaults.template;
-    elements.css.value = data.editorDefaults.css;
+    const activeDebug = getActiveDebugChallenge();
+    const debugTarget = activeDebug ? getDebugEditorTarget(activeDebug.code) : null;
+    const editorState = { ...data.editorDefaults };
+    if (activeDebug && debugTarget) editorState[debugTarget] = activeDebug.code;
+
+    elements.index.value = editorState.index;
+    elements.data.value = editorState.data;
+    elements.template.value = editorState.template;
+    elements.css.value = editorState.css;
+    if (activeDebug && debugTarget) saveDebugDraft(activeDebug, elements[debugTarget].value);
     runEditor();
-    window.PhpLabApp?.showToast?.("Editor dikembalikan ke contoh awal.");
+    window.PhpLabApp?.showToast?.(activeDebug ? "Draft debugging direset." : "Editor dikembalikan ke contoh awal.");
   };
 
   const copyEditor = () => {
@@ -289,13 +329,30 @@ window.PhpLabEditor = (() => {
     };
 
     elements.frame.setAttribute("sandbox", "allow-scripts");
-    elements.index.value = data.editorDefaults.index;
-    elements.data.value = data.editorDefaults.data;
-    elements.template.value = data.editorDefaults.template;
-    elements.css.value = data.editorDefaults.css;
+
+    const activeDebug = getActiveDebugChallenge();
+    const debugAttempt = activeDebug ? loadStoredMap(debugAttemptStorageKey)[activeDebug.id] || {} : {};
+    const debugCode = debugAttempt.code || activeDebug?.code || "";
+    const debugTarget = activeDebug ? getDebugEditorTarget(debugCode) : null;
+    const editorState = { ...data.editorDefaults };
+    if (activeDebug && debugTarget) editorState[debugTarget] = debugCode;
+
+    elements.index.value = editorState.index;
+    elements.data.value = editorState.data;
+    elements.template.value = editorState.template;
+    elements.css.value = editorState.css;
+
+    if (activeDebug && debugTarget) {
+      const head = elements[debugTarget].closest(".editor-shell")?.querySelector(".editor-head span");
+      head?.insertAdjacentHTML("beforeend", ` <span class="editor-debug-badge">debug: ${escapeHTML(activeDebug.title)}</span>`);
+      saveDebugDraft(activeDebug, elements[debugTarget].value);
+    }
 
     [elements.index, elements.data, elements.template, elements.css].forEach((input) => {
       input.addEventListener("keydown", insertTab);
+      if (activeDebug && debugTarget && input === elements[debugTarget]) {
+        input.addEventListener("input", () => saveDebugDraft(activeDebug, input.value));
+      }
     });
 
     document.getElementById("runEditor").addEventListener("click", runEditor);

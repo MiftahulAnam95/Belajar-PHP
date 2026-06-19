@@ -6,6 +6,8 @@ window.PhpLabApp = (() => {
   let activeDebugId = data.debugChallenges[0].id;
   const debugAttempts = {};
   const LESSON_RECALL_STORAGE_KEY = "php-beginner-lab-lesson-recall-v1";
+  const RECALL_STORAGE_KEY = "php-beginner-lab-recall-answers-v1";
+  const DEBUG_ATTEMPT_STORAGE_KEY = "php-beginner-lab-debug-attempts-v1";
   let toastInstance;
   let editorColorPicker;
   let editorTagSuggest;
@@ -39,6 +41,26 @@ window.PhpLabApp = (() => {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
 
+  const loadStoredMap = (key) => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || "{}");
+      return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+    } catch (error) {
+      console.warn("Data tersimpan tidak dapat dibaca.", error);
+      return {};
+    }
+  };
+
+  const saveStoredMap = (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.warn("Data belum dapat disimpan.", error);
+      return false;
+    }
+  };
+
   const loadLessonRecallAnswers = () => {
     try {
       const saved = JSON.parse(localStorage.getItem(LESSON_RECALL_STORAGE_KEY) || "{}");
@@ -55,6 +77,8 @@ window.PhpLabApp = (() => {
   };
 
   const lessonRecallAnswers = loadLessonRecallAnswers();
+  const recallChallengeAnswers = loadStoredMap(RECALL_STORAGE_KEY);
+  Object.assign(debugAttempts, loadStoredMap(DEBUG_ATTEMPT_STORAGE_KEY));
 
   const saveLessonRecallAnswers = () => {
     try {
@@ -64,6 +88,36 @@ window.PhpLabApp = (() => {
       console.warn("Jawaban recall materi tidak dapat disimpan.", error);
       return false;
     }
+  };
+
+  const saveRecallChallengeAnswer = (id, answer) => {
+    if (answer.trim()) {
+      recallChallengeAnswers[id] = answer;
+    } else {
+      delete recallChallengeAnswers[id];
+    }
+    return saveStoredMap(RECALL_STORAGE_KEY, recallChallengeAnswers);
+  };
+
+  const getDebugAttempt = (item) => {
+    const attempt = debugAttempts[item.id] || {};
+    const nextAttempt = {
+      analysis: "",
+      code: item.code,
+      submitted: false,
+      ...attempt
+    };
+    debugAttempts[item.id] = nextAttempt;
+    return nextAttempt;
+  };
+
+  const saveDebugAttempt = (id, attempt) => {
+    debugAttempts[id] = {
+      ...(debugAttempts[id] || {}),
+      ...attempt,
+      updatedAt: new Date().toISOString()
+    };
+    return saveStoredMap(DEBUG_ATTEMPT_STORAGE_KEY, debugAttempts);
   };
 
   const highlightTag = (tag) => {
@@ -799,6 +853,7 @@ window.PhpLabApp = (() => {
     activeRecallId = id;
     const item = data.recallChallenges.find((challenge) => challenge.id === id);
     const completed = progress.state.completedRecall;
+    const savedAnswer = recallChallengeAnswers[item.id] || "";
     recallList.innerHTML = data.recallChallenges
       .map(
         (challenge, index) => `
@@ -812,8 +867,9 @@ window.PhpLabApp = (() => {
       <span class="eyebrow">${escapeHTML(item.type)}</span>
       <h3 class="mt-2">${escapeHTML(item.title)}</h3>
       <p>${escapeHTML(item.prompt)}</p>
-      <textarea class="recall-input" placeholder="Tulis jawabanmu dengan bahasa sendiri..." aria-label="Jawaban recall challenge"></textarea>
+      <textarea class="recall-input" placeholder="Tulis jawabanmu dengan bahasa sendiri..." aria-label="Jawaban recall challenge" data-recall-answer="${item.id}">${escapeHTML(savedAnswer)}</textarea>
       <div class="d-flex flex-wrap gap-2 mt-3">
+        <button class="btn btn-soft" type="button" data-save-recall-answer="${item.id}"><i class="bi bi-floppy"></i> Simpan jawaban</button>
         <button class="btn btn-soft" type="button" data-show-recall-answer="${item.id}"><i class="bi bi-eye"></i> Lihat pembahasan</button>
         <button class="btn btn-primary" type="button" data-complete-recall="${item.id}"><i class="bi bi-check2-circle"></i> Tandai recall selesai</button>
       </div>
@@ -832,8 +888,7 @@ window.PhpLabApp = (() => {
     const previousItem = data.debugChallenges[activeIndex - 1];
     const nextItem = data.debugChallenges[activeIndex + 1];
     const completed = progress.state.completedDebug;
-    const attempt = debugAttempts[item.id] || { analysis: "", code: item.code, submitted: false };
-    debugAttempts[item.id] = attempt;
+    const attempt = getDebugAttempt(item);
     debugList.innerHTML = data.debugChallenges
       .map(
         (challenge, index) => `
@@ -862,6 +917,8 @@ window.PhpLabApp = (() => {
         </div>
         <div class="d-flex flex-wrap gap-2">
           <button class="btn btn-soft" type="button" data-show-debug-hint="${item.id}"><i class="bi bi-lightbulb"></i> Hint</button>
+          <button class="btn btn-soft" type="button" data-reset-debug="${item.id}"><i class="bi bi-arrow-counterclockwise"></i> Reset kode</button>
+          <a class="btn btn-soft" href="editor.html?debug=${encodeURIComponent(item.id)}"><i class="bi bi-code-square"></i> Buka editor</a>
           <button class="btn btn-primary" type="submit"><i class="bi bi-send-check"></i> ${attempt.submitted ? "Kirim ulang jawaban" : "Submit jawaban"}</button>
         </div>
       </form>
@@ -2202,13 +2259,26 @@ window.PhpLabApp = (() => {
       return;
     }
 
-    if (event.target.closest("[data-show-recall-answer]")) {
+    const showRecallButton = event.target.closest("[data-show-recall-answer]");
+    if (showRecallButton) {
+      const answerInput = getElement("recallDetail")?.querySelector(`[data-recall-answer="${showRecallButton.dataset.showRecallAnswer}"]`);
+      saveRecallChallengeAnswer(showRecallButton.dataset.showRecallAnswer, answerInput?.value || "");
       getElement("recallAnswer")?.classList.remove("d-none");
+      return;
+    }
+
+    const saveRecallButton = event.target.closest("[data-save-recall-answer]");
+    if (saveRecallButton) {
+      const answerInput = getElement("recallDetail")?.querySelector(`[data-recall-answer="${saveRecallButton.dataset.saveRecallAnswer}"]`);
+      saveRecallChallengeAnswer(saveRecallButton.dataset.saveRecallAnswer, answerInput?.value || "");
+      showToast("Jawaban recall disimpan.");
       return;
     }
 
     const completeRecallButton = event.target.closest("[data-complete-recall]");
     if (completeRecallButton) {
+      const answerInput = getElement("recallDetail")?.querySelector(`[data-recall-answer="${completeRecallButton.dataset.completeRecall}"]`);
+      saveRecallChallengeAnswer(completeRecallButton.dataset.completeRecall, answerInput?.value || "");
       const result = progress.markRecall(completeRecallButton.dataset.completeRecall);
       renderRecallChallenge(completeRecallButton.dataset.completeRecall);
       updateProgress();
@@ -2225,6 +2295,16 @@ window.PhpLabApp = (() => {
 
     if (event.target.closest("[data-show-debug-hint]")) {
       getElement("debugHint")?.classList.remove("d-none");
+      return;
+    }
+
+    const resetDebugButton = event.target.closest("[data-reset-debug]");
+    if (resetDebugButton) {
+      const item = data.debugChallenges.find((challenge) => challenge.id === resetDebugButton.dataset.resetDebug);
+      if (!item) return;
+      saveDebugAttempt(item.id, { analysis: "", code: item.code, submitted: false });
+      renderDebuggingChallenge(item.id);
+      showToast("Kode debugging dikembalikan ke versi awal.");
       return;
     }
 
@@ -2262,22 +2342,28 @@ window.PhpLabApp = (() => {
       return;
     }
     const id = debugForm.dataset.debugForm;
-    debugAttempts[id] = { analysis, code, submitted: true };
+    saveDebugAttempt(id, { analysis, code, submitted: true });
     renderDebuggingChallenge(id);
     getElement("debugAnswer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     showToast("Jawaban terkirim. Silakan pelajari pembahasannya.");
   };
 
   const handleInput = (event) => {
+    const recallAnswerInput = event.target.closest("[data-recall-answer]");
+    if (recallAnswerInput) {
+      saveRecallChallengeAnswer(recallAnswerInput.dataset.recallAnswer, recallAnswerInput.value);
+      return;
+    }
+
     const debugForm = event.target.closest("[data-debug-form]");
     if (!debugForm) return;
     const id = debugForm.dataset.debugForm;
     const previousAttempt = debugAttempts[id] || { submitted: false };
-    debugAttempts[id] = {
+    saveDebugAttempt(id, {
       analysis: debugForm.elements.analysis.value,
       code: debugForm.elements.code.value,
       submitted: previousAttempt.submitted
-    };
+    });
   };
 
   const handleKeydown = (event) => {

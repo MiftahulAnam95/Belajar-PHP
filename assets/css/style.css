@@ -1899,6 +1899,23 @@ body.dark-mode .brand-logo-dark {
   gap: 0.45rem;
 }
 
+.editor-debug-badge {
+  background: color-mix(in srgb, var(--primary) 16%, #182235);
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, #28384f);
+  border-radius: 999px;
+  color: #ddd6fe;
+  display: inline-flex;
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  margin-left: 0.3rem;
+  max-width: min(260px, 46vw);
+  overflow: hidden;
+  padding: 0.12rem 0.42rem;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
 .editor-head i,
 .preview-head i {
   color: var(--cyan);
